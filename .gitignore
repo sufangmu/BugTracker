@@ -1,0 +1,9 @@
+.idea/
+.DS_Store
+__pycache__/
+*.py[cod]
+*$py.class
+*/migrations/*.py
+!*/migrations/__init__py
+
+dev_settings.py
