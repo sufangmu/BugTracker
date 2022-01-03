@@ -117,6 +117,11 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+SMS_TEMPLATES = {"register": "【注册】",
+                 "login": "【登录】",
+                 }
+
 try:
     from .dev_settings import *
 except ImportError:
