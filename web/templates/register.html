@@ -40,3 +40,27 @@
     </div>
 
 {% endblock %}
+{% block js %}
+    <script src="{% static 'js/csrftoken.js' %}"></script>
+    <script>
+        $(function () {
+            ClickSMSBtn();
+        });
+        /*获取验证码的事件*/
+        function ClickSMSBtn() {
+            $('#smsBtn').click(function () {
+                // 获取用户输入的手机号
+                let mobilePhone = $('#id_mobile_phone').val()
+                // 发送ajax请求
+                $.ajax({
+                    url: "{% url 'send_sms' %}",
+                    type: "POST",
+                    data:  {"mobile_phone": mobilePhone, template: "register"},
+                    success: function (res) { // res: 后端返回的值
+                        console.log(res)
+                    }
+                })
+            })
+        }
+    </script>
+{% endblock %}
