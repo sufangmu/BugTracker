@@ -1,8 +1,42 @@
 {% extends 'layout/base.html' %}
+{% load static %}
 {% block title %}BugTracker|注册{% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/account.css' %}">
+{% endblock %}
 {% block content %}
-    <div class="container">
-        <p>注册</p>
+    <div class="account">
+        <div class="title">用户注册</div>
+        <form action="POST" , id="form" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                {% if field.name == 'code' %}
+                    <div class="form-group">
+                        {#                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>#}
+                        <div class="row">
+                            <div class="col-xs-7">
+                                {{ field }}
+                                <span class="error-msg">{{ field.errors.0 }}</span>
+                            </div>
+                            <div class="col-xs-5">
+                                <input type="button" id="smsBtn" class="btn btn-default" value="获取验证码">
+                            </div>
+                        </div>
+                    </div>
+
+                {% else %}
+                    <div class="form-group">
+                        {{ field }}
+                        <span class="error-msg">{{ field.errors.0 }}</span>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <div class="row">
+                <div class="col-xs-12">
+                    <input type="button" id="submit" class="btn btn-primary col-xs-12" value="注 册">
+                </div>
+            </div>
+        </form>
     </div>
 
 {% endblock %}
