@@ -46,6 +46,21 @@
             ClickSMSBtn();
         });
 
+        function sendSMSRemind() {
+            // 倒计时
+            let $BtnSMS = $('#smsBtn');
+            $BtnSMS.prop("disabled", true);
+            let time = 60;
+            let remind = setInterval(function () {
+                $BtnSMS.val(time + "秒后重新发送")
+                time = time - 1;
+                if (time < 1) {
+                    clearInterval(remind)
+                    $BtnSMS.val("点击获取验证码").prop("disabled", false)
+                }
+            }, 1000)
+        }
+
         /*获取验证码的事件*/
         function ClickSMSBtn() {
             $('#smsBtn').click(function () {
@@ -60,7 +75,7 @@
                     dataType: "JSON", // 将服务器返回的数据反序列化为字典
                     success: function (res) { // res: 后端返回的值
                         if (res.status) {
-                            console.log("发送成功")
+                            sendSMSRemind();
                         } else {
                             console.log(res)
                             $.each(res.error, function (key, value) {
