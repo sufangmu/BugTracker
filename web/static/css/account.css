@@ -19,3 +19,9 @@
 .account .form-group {
     margin-bottom: 20px;
 }
+
+.error-msg {
+    color: red;
+    position: absolute; /*有错误信息时，元素不下移*/
+
+}
