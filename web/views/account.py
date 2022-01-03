@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render
 from web.forms.account import RegisterModelForm, SendSMSForm
 
@@ -16,5 +16,5 @@ def send_sms(request):
         form = SendSMSForm(request, data=request.POST)
         # 校验不为空且格式正确
         if form.is_valid():
-            pass
-    return HttpResponse("ok")
+            return JsonResponse({"status": True})
+        return JsonResponse({"status": False, "error": form.errors})

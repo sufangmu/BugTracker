@@ -122,6 +122,20 @@ SMS_TEMPLATES = {"register": "【注册】",
                  "login": "【登录】",
                  }
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://192.168.1.128:6379",  # 安装redis的主机的 IP 和 端口
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {
+                "max_connections": 1000,
+                "encoding": 'utf-8'
+            },
+            "PASSWORD": "redisadmin"  # redis密码
+        }
+    }
+}
 try:
     from .dev_settings import *
 except ImportError:
