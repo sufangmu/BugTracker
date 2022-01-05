@@ -7,7 +7,9 @@ def register(request):
     """注册"""
     form = RegisterModelForm()
     if request.method == 'POST':
-        print(request.POST)
+        form = RegisterModelForm(data=request.POST)
+        if form.is_valid():
+            form.save()  # save()会自动剔除表中不存在的字段
     return render(request, 'register.html', {'form': form})
 
 

@@ -8,7 +8,7 @@ from django.core.validators import RegexValidator
 from web import models
 from django.conf import settings
 from web.utils.sms import send_single_sms
-
+from web.utils import encrypt
 
 class RegisterModelForm(forms.ModelForm):
     password = forms.CharField(
@@ -52,10 +52,17 @@ class RegisterModelForm(forms.ModelForm):
             raise ValidationError("用户名已存在")
         return username
 
+    def clean_password(self):
+        password = self.cleaned_data['password']
+        # 对密码进行加密并返回
+        password = encrypt.md5(password)
+        return password
+
     def clean_confirm_password(self):
         # self.cleaned_data 已经校验过的数据
         password = self.cleaned_data['password']
         confirm_password = self.cleaned_data['confirm_password']
+        confirm_password = encrypt.md5(confirm_password)
         if password != confirm_password:
             raise ValidationError("两次密码不一致")
         return confirm_password
