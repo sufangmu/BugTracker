@@ -47,7 +47,7 @@ class RegisterModelForm(forms.ModelForm):
 
     def clean_username(self):
         username = self.cleaned_data["username"]
-        exist = models.UserInfo.objects.filter(username=username).exist()
+        exist = models.UserInfo.objects.filter(username=username).exists()
         if exist:
             raise ValidationError("用户名已存在")
         return username
@@ -83,13 +83,13 @@ class RegisterModelForm(forms.ModelForm):
 
     def clean_code(self):
         code = self.cleaned_data['code']
-        mobile_phone = self.cleaned_data['mobile_phone']
-
+        mobile_phone = self.cleaned_data.get('mobile_phone')
+        if not mobile_phone:
+            return code
         conn = get_redis_connection()
         r_code = conn.get(mobile_phone)
         if not r_code:
             raise ValidationError("验证码失效或未发送，请重新发送")
-
         r_code = r_code.decode("utf-8")
         if code.strip() != r_code:
             raise ValidationError("验证码错误，请重新输入")

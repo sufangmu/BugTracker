@@ -50,6 +50,7 @@
         // 通过ajax提交form表单中的数据
         function ClickSubmitBtn() {
             $('#submitBtn').click(function () {
+                $('.error-msg').empty();
                 $.ajax({
                     url: "{% url 'register' %}",
                     type: "POST",
@@ -57,7 +58,13 @@
                     // 收集表单中的数据
                     data: $("#register_form").serialize(), // 包含表单所有字段的数据，并且携带了csrf token
                     success: function (res) {
-                        console.log(res)
+                        if (res.status) {
+                            location.href = res.url  // 跳转到登录页面
+                        } else {
+                            $.each(res.error, function (key, value) {
+                                $("#id_" + key).next().text(value[0]);
+                            })
+                        }
                     }
                 })
             })
@@ -94,7 +101,6 @@
                         if (res.status) {
                             sendSMSRemind();
                         } else {
-                            console.log(res)
                             $.each(res.error, function (key, value) {
                                 $("#id_" + key).next().text(value[0]);
                             })

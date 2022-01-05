@@ -1,6 +1,12 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
+from django.urls import reverse
+
 from web.forms.account import RegisterModelForm, SendSMSForm
+
+
+def login(request):
+    return HttpResponse("ok")
 
 
 def register(request):
@@ -10,6 +16,8 @@ def register(request):
         form = RegisterModelForm(data=request.POST)
         if form.is_valid():
             form.save()  # save()会自动剔除表中不存在的字段
+            return JsonResponse({"status": True, "url": reverse('login')})
+        return JsonResponse({"status": False, "error": form.errors})
     return render(request, 'register.html', {'form': form})
 
 
