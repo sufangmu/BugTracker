@@ -108,9 +108,12 @@ class SendSMSForm(forms.Form):
         mobile_phone = self.cleaned_data["mobile_phone"]
         # 校验数据库中是否已有手机号
         exist = models.UserInfo.objects.filter(mobile_phone=mobile_phone).exists()
-        if exist:
-            raise ValidationError("手机号已存在")
-
+        if template == "login":
+            if not exist:
+                raise ValidationError("手机号不存在")
+        else:
+            if exist:
+                raise ValidationError("手机号已存在")
         # 生成随机验证码并发送短信
         code = random.randrange(1000, 9999)
         result = send_single_sms(mobile_phone, template, [code, ])
