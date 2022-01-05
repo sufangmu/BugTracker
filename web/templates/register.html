@@ -7,7 +7,7 @@
 {% block content %}
     <div class="account">
         <div class="title">用户注册</div>
-        <form action="post" id="form" novalidate>
+        <form action="" id="register_form" method="post" novalidate>
             {% csrf_token %}
             {% for field in form %}
                 {% if field.name == 'code' %}
@@ -32,7 +32,7 @@
             {% endfor %}
             <div class="row">
                 <div class="col-xs-12">
-                    <input type="button" id="submit" class="btn btn-primary col-xs-12" value="注 册">
+                    <input type="button" id="submitBtn" class="btn btn-primary col-xs-12" value="注 册">
                 </div>
             </div>
         </form>
@@ -44,7 +44,24 @@
     <script>
         $(function () {
             ClickSMSBtn();
+            ClickSubmitBtn();
         });
+
+        // 通过ajax提交form表单中的数据
+        function ClickSubmitBtn() {
+            $('#submitBtn').click(function () {
+                $.ajax({
+                    url: "{% url 'register' %}",
+                    type: "POST",
+                    dataType: "JSON",
+                    // 收集表单中的数据
+                    data: $("#register_form").serialize(), // 包含表单所有字段的数据，并且携带了csrf token
+                    success: function (res) {
+                        console.log(res)
+                    }
+                })
+            })
+        }
 
         function sendSMSRemind() {
             // 倒计时

@@ -6,6 +6,8 @@ from web.forms.account import RegisterModelForm, SendSMSForm
 def register(request):
     """注册"""
     form = RegisterModelForm()
+    if request.method == 'POST':
+        print(request.POST)
     return render(request, 'register.html', {'form': form})
 
 

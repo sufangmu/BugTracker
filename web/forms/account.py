@@ -11,14 +11,26 @@ from web.utils.sms import send_single_sms
 
 
 class RegisterModelForm(forms.ModelForm):
-    mobile_phone = forms.CharField(label='手机号', validators=[RegexValidator(r'^(1[3|4|5|6|7|8|9])\d{9}$', '手机号格式错误'), ])
     password = forms.CharField(
         label='密码',
+        min_length=8,
+        max_length=32,
+        error_messages={
+            "min_length": "密码长度不能小于8个字符",
+            "max_length": "密码长度不能大于32个字符",
+        },
         widget=forms.PasswordInput())
 
     confirm_password = forms.CharField(
         label='重复密码',
+        min_length=8,
+        max_length=32,
+        error_messages={
+            "min_length": "密码长度不能小于8个字符",
+            "max_length": "密码长度不能大于32个字符",
+        },
         widget=forms.PasswordInput())
+    mobile_phone = forms.CharField(label='手机号', validators=[RegexValidator(r'^(1[3|4|5|6|7|8|9])\d{9}$', '手机号格式错误'), ])
     code = forms.CharField(
         label='验证码',
         widget=forms.TextInput())
@@ -32,6 +44,49 @@ class RegisterModelForm(forms.ModelForm):
         for name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
             field.widget.attrs['placeholder'] = '请输入%s' % (field.label,)
+
+    def clean_username(self):
+        username = self.cleaned_data["username"]
+        exist = models.UserInfo.objects.filter(username=username).exist()
+        if exist:
+            raise ValidationError("用户名已存在")
+        return username
+
+    def clean_confirm_password(self):
+        # self.cleaned_data 已经校验过的数据
+        password = self.cleaned_data['password']
+        confirm_password = self.cleaned_data['confirm_password']
+        if password != confirm_password:
+            raise ValidationError("两次密码不一致")
+        return confirm_password
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        exist = models.UserInfo.objects.filter(email=email).exists()
+        if exist:
+            raise ValidationError("邮箱已存在")
+        return email
+
+    def clean_mobile_phone(self):
+        mobile_phone = self.cleaned_data['mobile_phone']
+        exist = models.UserInfo.objects.filter(mobile_phone=mobile_phone).exists()
+        if exist:
+            raise ValidationError("手机号已注册")
+        return mobile_phone
+
+    def clean_code(self):
+        code = self.cleaned_data['code']
+        mobile_phone = self.cleaned_data['mobile_phone']
+
+        conn = get_redis_connection()
+        r_code = conn.get(mobile_phone)
+        if not r_code:
+            raise ValidationError("验证码失效或未发送，请重新发送")
+
+        r_code = r_code.decode("utf-8")
+        if code.strip() != r_code:
+            raise ValidationError("验证码错误，请重新输入")
+        return code
 
 
 class SendSMSForm(forms.Form):
