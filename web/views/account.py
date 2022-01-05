@@ -2,11 +2,17 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 
-from web.forms.account import RegisterModelForm, SendSMSForm
+from web.forms.account import RegisterModelForm, SendSMSForm, LoginSMSForm
 
 
 def login(request):
     return HttpResponse("ok")
+
+
+def login_sms(request):
+    form = LoginSMSForm()
+
+    return render(request, 'login_sms.html', {"form": form})
 
 
 def register(request):
