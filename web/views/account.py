@@ -5,13 +5,23 @@ from django.urls import reverse
 from web.forms.account import RegisterModelForm, SendSMSForm, LoginSMSForm
 
 
+def index(request):
+    return HttpResponse("index")
+
+
 def login(request):
     return HttpResponse("ok")
 
 
 def login_sms(request):
     form = LoginSMSForm()
-
+    if request.method == "POST":
+        print(request.POST)
+        form = LoginSMSForm(data=request.POST)
+        if form.is_valid():
+            return JsonResponse({"status": True, "url": reverse('index')})
+        else:
+            return JsonResponse({"status": False, "error": form.errors})
     return render(request, 'login_sms.html', {"form": form})
 
 

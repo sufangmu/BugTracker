@@ -131,3 +131,24 @@ class LoginSMSForm(BootStrapForm, forms.Form):
     code = forms.CharField(
         label='验证码',
         widget=forms.TextInput())
+
+    def clean_mobile_phone(self):
+        mobile_phone = self.cleaned_data['mobile_phone']
+        exist = models.UserInfo.objects.filter(mobile_phone=mobile_phone).exists()
+        if not exist:
+            raise ValidationError("手机号不存在")
+        return mobile_phone
+
+    def clean_code(self):
+        mobile_phone = self.cleaned_data.get('mobile_phone')
+        code = self.cleaned_data['code']
+        if not mobile_phone:  # 手机号不存在则不需要继续校验
+            return code
+        conn = get_redis_connection()
+        r_code = conn.get(mobile_phone)
+        if not r_code:
+            raise ValidationError("验证码失效或未发送，请重新发送")
+        r_code = r_code.decode("utf-8")
+        if code.strip() != r_code:
+            raise ValidationError("验证码错误，请重新输入")
+        return code
