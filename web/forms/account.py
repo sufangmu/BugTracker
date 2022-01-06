@@ -152,3 +152,9 @@ class LoginSMSForm(BootStrapForm, forms.Form):
         if code.strip() != r_code:
             raise ValidationError("验证码错误，请重新输入")
         return code
+
+
+class LoginForm(BootStrapForm, forms.Form):
+    username = forms.CharField(label="用户名")
+    password = forms.CharField(label="密码", widget=forms.PasswordInput)
+    code = forms.CharField(label="验证码")

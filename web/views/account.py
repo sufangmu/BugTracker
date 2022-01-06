@@ -2,7 +2,7 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 
-from web.forms.account import RegisterModelForm, SendSMSForm, LoginSMSForm
+from web.forms.account import RegisterModelForm, SendSMSForm, LoginSMSForm, LoginForm
 
 
 def index(request):
@@ -10,13 +10,15 @@ def index(request):
 
 
 def login(request):
-    return HttpResponse("ok")
+    """用户名和密码登录"""
+    form = LoginForm()
+    return render(request, 'login.html', {"form": form})
 
 
 def login_sms(request):
+    """短信登录"""
     form = LoginSMSForm()
     if request.method == "POST":
-        print(request.POST)
         form = LoginSMSForm(data=request.POST)
         if form.is_valid():
             return JsonResponse({"status": True, "url": reverse('index')})
@@ -46,3 +48,13 @@ def send_sms(request):
         if form.is_valid():
             return JsonResponse({"status": True})
         return JsonResponse({"status": False, "error": form.errors})
+
+
+def image_code(request):
+    from io import BytesIO
+    from web.utils.image_code import check_code
+    img_obj, code = check_code()
+    print(code)
+    stream = BytesIO()
+    img_obj.save(stream, 'png')
+    return HttpResponse(stream.getvalue())

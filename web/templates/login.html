@@ -1,0 +1,42 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+{% block title %}BugTracker|登录{% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/account.css' %}">
+{% endblock %}
+{% block content %}
+    <div class="account">
+        <div class="title">用户登录</div>
+        <form action="" method="post" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                {% if field.name == 'code' %}
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xs-7">
+                                {{ field }}
+                                <span class="error-msg"></span>
+                            </div>
+                            <div class="col-xs-5">
+                                <img src="{% url 'image_code' %}" alt="验证码">
+                            </div>
+                        </div>
+                    </div>
+
+                {% else %}
+                    <div class="form-group">
+                        {{ field }}
+                        <span class="error-msg">{{ field.errors.0 }}</span>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <div class="row">
+                <div class="col-xs-12">
+                    <input type="button" id="submitBtn" class="btn btn-primary col-xs-3" value="登 录">
+                    <a href="{% url 'register' %}" type="button" class="btn btn-primary col-xs-offset-6 col-xs-3">注
+                        册</a>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
