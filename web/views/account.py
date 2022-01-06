@@ -7,7 +7,7 @@ from web.forms.account import RegisterModelForm, SendSMSForm, LoginSMSForm, Logi
 
 
 def index(request):
-    return HttpResponse("index")
+    return render(request, 'index.html')
 
 
 def login(request):

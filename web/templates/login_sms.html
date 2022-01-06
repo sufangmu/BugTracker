@@ -30,13 +30,14 @@
                     </div>
                 {% endif %}
             {% endfor %}
+
             <div class="row">
                 <div class="col-xs-12">
                     <input type="button" id="submitBtn" class="btn btn-primary col-xs-3" value="登 录">
-                    <a href="{% url 'register' %}" type="button" class="btn btn-primary col-xs-offset-6 col-xs-3">注
-                        册</a>
+                    <a href="{% url 'login' %}" style="float: right">用户名登录?</a>
                 </div>
             </div>
+
         </form>
     </div>
 {% endblock %}
