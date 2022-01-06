@@ -1,7 +1,8 @@
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
-
+from django.db.models import Q
+from web import models
 from web.forms.account import RegisterModelForm, SendSMSForm, LoginSMSForm, LoginForm
 
 
@@ -11,7 +12,20 @@ def index(request):
 
 def login(request):
     """用户名和密码登录"""
-    form = LoginForm()
+    form = LoginForm(request)
+    if request.method == "POST":
+        form = LoginForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+            user_obj = models.UserInfo.objects.filter(
+                Q(username=username) | Q(mobile_phone=username) | Q(email=username)).filter(password=password)
+            if user_obj:
+                return redirect('index')
+            else:
+                form.add_error('password', '用户名或密码错误')
+        else:
+            return render(request, 'login.html', {"form": form})
     return render(request, 'login.html', {"form": form})
 
 
@@ -19,7 +33,7 @@ def login_sms(request):
     """短信登录"""
     form = LoginSMSForm()
     if request.method == "POST":
-        form = LoginSMSForm(data=request.POST)
+        form = LoginSMSForm(request, data=request.POST)
         if form.is_valid():
             return JsonResponse({"status": True, "url": reverse('index')})
         else:

@@ -15,7 +15,7 @@
                         <div class="row">
                             <div class="col-xs-7">
                                 {{ field }}
-                                <span class="error-msg"></span>
+                                <span class="error-msg">{{ field.errors.0 }}</span>
                             </div>
                             <div class="col-xs-5">
                                 <img src="{% url 'image_code' %}" alt="验证码" id="image_code" title="点击更换验证码">
@@ -32,7 +32,7 @@
             {% endfor %}
             <div class="row">
                 <div class="col-xs-12">
-                    <input type="button" id="submitBtn" class="btn btn-primary col-xs-3" value="登 录">
+                    <input type="submit" id="submitBtn" class="btn btn-primary col-xs-3" value="登 录">
                     <a href="{% url 'register' %}" type="button" class="btn btn-primary col-xs-offset-6 col-xs-3">注
                         册</a>
                 </div>
@@ -47,7 +47,6 @@
             $("#image_code").click(function () {
                 let oldSrc = $(this).attr("src");
                 $(this).attr("src", oldSrc + "?"); // /image/code/?
-                $(this).attr("src", oldSrc);
             })
         })
     </script>
