@@ -18,7 +18,7 @@
                                 <span class="error-msg"></span>
                             </div>
                             <div class="col-xs-5">
-                                <img src="{% url 'image_code' %}" alt="验证码">
+                                <img src="{% url 'image_code' %}" alt="验证码" id="image_code" title="点击更换验证码">
                             </div>
                         </div>
                     </div>
@@ -39,4 +39,16 @@
             </div>
         </form>
     </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(function () {
+            $("#image_code").click(function () {
+                let oldSrc = $(this).attr("src");
+                $(this).attr("src", oldSrc + "?"); // /image/code/?
+                $(this).attr("src", oldSrc);
+            })
+        })
+    </script>
 {% endblock %}

@@ -54,7 +54,8 @@ def image_code(request):
     from io import BytesIO
     from web.utils.image_code import check_code
     img_obj, code = check_code()
-    print(code)
+    request.session["image_code"] = code
+    request.session.set_expiry(60)  # 60失效
     stream = BytesIO()
     img_obj.save(stream, 'png')
     return HttpResponse(stream.getvalue())
