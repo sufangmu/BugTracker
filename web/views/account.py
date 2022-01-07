@@ -10,6 +10,11 @@ def index(request):
     return render(request, 'index.html')
 
 
+def logout(request):
+    request.session.flush()
+    return redirect('index')
+
+
 def login(request):
     """用户名和密码登录"""
     form = LoginForm(request)
@@ -19,11 +24,12 @@ def login(request):
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password"]
             user_obj = models.UserInfo.objects.filter(
-                Q(username=username) | Q(mobile_phone=username) | Q(email=username)).filter(password=password)
+                Q(username=username) | Q(mobile_phone=username) | Q(email=username)).filter(password=password).first()
             if user_obj:
+                request.session['user_id'] = user_obj.id
+                request.session.set_expiry(60 * 60 * 24 * 14)
                 return redirect('index')
-            else:
-                form.add_error('password', '用户名或密码错误')
+            form.add_error('password', '用户名或密码错误')
         else:
             return render(request, 'login.html', {"form": form})
     return render(request, 'login.html', {"form": form})

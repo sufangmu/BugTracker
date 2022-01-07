@@ -8,7 +8,7 @@ urlpatterns = [
     path('send_sms/', account.send_sms, name='send_sms'),
     path('login/', account.login, name='login'),
     path('login/sms/', account.login_sms, name='login_sms'),
-    path('index.html/', account.index, name='index.html'),
     path('image/code/', account.image_code, name='image_code'),
-    path('index/', account.index, name='index'),
+    path('', account.index, name='index'),
+    path('logout/', account.logout, name='logout'),
 ]
