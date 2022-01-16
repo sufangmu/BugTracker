@@ -1,3 +1,5 @@
+import uuid
+import datetime
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -53,7 +55,18 @@ def register(request):
     if request.method == 'POST':
         form = RegisterModelForm(data=request.POST)
         if form.is_valid():
-            form.save()  # save()会自动剔除表中不存在的字段
+            instance = form.save()  # save()会自动剔除表中不存在的字段
+            # 创建交易记录
+            price_policy = models.PricePolicy.objects.filter(category=1, title="个人免费版")
+            models.Transaction.objects.create(
+                status=2,
+                order=str(uuid.uuid4()),
+                user=instance,
+                price_policy=price_policy,
+                count=0,
+                price=0,
+                start_datetime=datetime.datetime.now(),
+            )
             return JsonResponse({"status": True, "url": reverse('login')})
         return JsonResponse({"status": False, "error": form.errors})
     return render(request, 'register.html', {'form': form})
