@@ -5,4 +5,6 @@ from django.shortcuts import render
 
 
 def project_list(request):
+    print(request.tracker.user)
+    print(request.tracker.price_policy)
     return render(request, 'project_list.html')

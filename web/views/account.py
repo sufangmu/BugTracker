@@ -57,7 +57,7 @@ def register(request):
         if form.is_valid():
             instance = form.save()  # save()会自动剔除表中不存在的字段
             # 创建交易记录
-            price_policy = models.PricePolicy.objects.filter(category=1, title="个人免费版")
+            price_policy = models.PricePolicy.objects.filter(category=1, title="个人免费版").first()
             models.Transaction.objects.create(
                 status=2,
                 order=str(uuid.uuid4()),
