@@ -2,6 +2,7 @@
 # _*_ coding:utf-8 _*_
 from django.urls import path
 from web.views import account
+from web.views import project
 
 urlpatterns = [
     path('register/', account.register, name='register'),
@@ -11,4 +12,6 @@ urlpatterns = [
     path('image/code/', account.image_code, name='image_code'),
     path('', account.index, name='index'),
     path('logout/', account.logout, name='logout'),
+
+    path('project/list', project.project_list, name='project_list')
 ]

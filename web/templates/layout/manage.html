@@ -6,6 +6,7 @@
     <title>{% block title %}BugTracker{% endblock title %}</title>
     <link rel="stylesheet" href="{% static 'plugin/bootstrap/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'plugin/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/manage.css' %}">
     <style>
         .navbar-default {
             border-radius: 0px;
@@ -17,7 +18,7 @@
     {% endblock %}
 </head>
 <body>
-<nav class="navbar navbar-default">
+<nav class="navbar navbar-primary">
     <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -29,23 +30,38 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="{% url 'index' %}">BugTracker</a>
+
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li><a href="#">产品功能</a></li>
-                <li><a href="#">企业方案</a></li>
-                <li><a href="#">帮助文档</a></li>
-                <li><a href="#">价格</a></li>
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">项目<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">Separated link</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">One more separated link</a></li>
+                    </ul>
+                </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if request.tracker %}
+                    <li><a href="#">工作台</a></li>
+                    <li><a href="#">日历</a></li>
+                    <li><a href="#"><i class="fa fa-bell-o" aria-hidden="true"></i></a></li>
+                    <li><a href="#"><i class="fa fa-bookmark" aria-hidden="true"></i></a></li>
+
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                            aria-expanded="false">{{ request.tracker.username }}<span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{% url 'project_list' %}">项目列表</a></li>
+                            <li><a href="{% url 'index' %}">官网</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a href="{% url 'logout' %}">退出</a></li>
                         </ul>
