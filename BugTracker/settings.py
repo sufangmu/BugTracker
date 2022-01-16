@@ -138,6 +138,15 @@ CACHES = {
     }
 }
 
+WHITE_URL_REGEX_LIST = [
+    '/register/',
+    '/send_sms/',
+    '/login/',
+    '/login/sms/',
+    '/image/code/',
+    '/',
+]
+
 try:
     from .dev_settings import *
 except ImportError:
