@@ -23,7 +23,6 @@ class AuthMiddleware(MiddlewareMixin):
         user_obj = models.UserInfo.objects.filter(id=user_id).first()
         request.tracker.user = user_obj
 
-
         # 白名单：如果没有登录也可以访问的url
         # 当前用户访问的白名单，如果在则可以直接访问，如果不存在重定向到登录页面
 

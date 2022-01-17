@@ -1,13 +1,68 @@
 {% extends 'layout/manage.html' %}
 {% block css %}
     <style>
-        .project{
+        .project {
             margin-top: 10px;
         }
     </style>
 {% endblock %}
 {% block content %}
     <div class="container-fluid project">
-        <a href="" class="btn btn-primary">新建项目</a>
+        <a href="" class="btn btn-primary" data-toggle="modal" data-target="#addProjectModel">新建项目</a>
     </div>
+    <div class="modal fade" id="addProjectModel" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">新建项目</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="addProject">
+                        {% for field in form %}
+                            <div class="form-group">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                <span class="error-msg"></span>
+                            </div>
+                        {% endfor %}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="btnSubmit">保存</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(function () {
+            ClickSubmitBtn();
+        });
+
+        function ClickSubmitBtn() {
+            $('#btnSubmit').click(function () {
+                $('#error-msg').empty();
+                $.ajax({
+                    url: "{% url 'project_list' %}",
+                    type: "POST",
+                    data: $('#addProject').serialize(),
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            location.reload()  // 刷新页面
+                        } else {
+                            $.each(res.error, function (key, value) {
+                                $("#id_" + key).next().text(value[0]);
+                            })
+                        }
+                    }
+                })
+            })
+        }
+    </script>
 {% endblock %}
