@@ -9,6 +9,7 @@ from web.forms.bootstrap import BootStrapForm
 
 class ProjectModelForm(BootStrapForm, forms.ModelForm):
     """创建项目"""
+
     def __init__(self, request, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.request = request
@@ -17,7 +18,7 @@ class ProjectModelForm(BootStrapForm, forms.ModelForm):
         model = models.Project
         fields = ["name", "color", "desc"]
         widgets = {
-            "desc": forms.Textarea,
+            "desc": forms.Textarea(attrs={"style": "resize:none;"}),
         }
 
     def clean_name(self):
