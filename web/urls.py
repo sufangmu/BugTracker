@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # _*_ coding:utf-8 _*_
-from django.urls import path
+from django.urls import path, re_path
 from web.views import account
 from web.views import project
 
@@ -13,5 +13,6 @@ urlpatterns = [
     path('', account.index, name='index'),
     path('logout/', account.logout, name='logout'),
 
-    path('project/list', project.project_list, name='project_list')
+    path('project/list', project.project_list, name='project_list'),
+    re_path(r'project/star/(?P<project_type>\w+)/(?P<project_id>\d+)/', project.project_star, name='project_star'),
 ]

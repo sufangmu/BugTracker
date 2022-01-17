@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # _*_ coding:utf-8 _*_
 # filename: project.py
-from django.http import JsonResponse
-from django.shortcuts import render
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import render, redirect
 from web.forms.project import ProjectModelForm
 from web import models
 
@@ -33,6 +33,7 @@ def project_list(request):
                 project_dict["star"].append(item.project)
             else:
                 project_dict["join"].append(item.project)
+
         form = ProjectModelForm(request)
         return render(request, 'project_list.html', {"form": form, "projects": project_dict})
     if request.method == "POST":
@@ -44,3 +45,14 @@ def project_list(request):
             # 由于是ajax请求，所以返回json字符串
             return JsonResponse({"status": True})
         return JsonResponse({"status": False, "error": form.errors})
+
+
+def project_star(request, project_type, project_id):
+    """星标"""
+    if project_type == "mine":
+        models.Project.objects.filter(id=project_id, creator=request.tracker.user).update(star=True)
+        return redirect("project_list")
+    elif project_type == "join":
+        models.ProjectUser.objects.filter(id=project_id, user=request.tracker.user).update(star=True)
+        return redirect("project_list")
+    return HttpResponse('请求错误')
