@@ -23,6 +23,7 @@ def project_list(request):
         my_project_list = models.Project.objects.filter(creator=user)
         for item in my_project_list:
             if item.star:
+                item.type = "mine"
                 project_dict["star"].append(item)
             else:
                 project_dict["mine"].append(item)
@@ -30,6 +31,7 @@ def project_list(request):
         join_project_list = models.ProjectUser.objects.filter(user=user)
         for item in join_project_list:
             if item.star:
+                item.project.type = "join"
                 project_dict["star"].append(item.project)
             else:
                 project_dict["join"].append(item.project)
@@ -54,5 +56,16 @@ def project_star(request, project_type, project_id):
         return redirect("project_list")
     elif project_type == "join":
         models.ProjectUser.objects.filter(id=project_id, user=request.tracker.user).update(star=True)
+        return redirect("project_list")
+    return HttpResponse('请求错误')
+
+
+def project_unstar(request, project_type, project_id):
+    """取消星标"""
+    if project_type == "mine":
+        models.Project.objects.filter(id=project_id, creator=request.tracker.user).update(star=False)
+        return redirect("project_list")
+    elif project_type == "join":
+        models.ProjectUser.objects.filter(id=project_id, user=request.tracker.user).update(star=False)
         return redirect("project_list")
     return HttpResponse('请求错误')

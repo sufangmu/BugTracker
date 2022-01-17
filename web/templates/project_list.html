@@ -61,7 +61,11 @@
 {% endblock %}
 {% block content %}
     <div class="container-fluid project">
-        <a href="" class="btn btn-primary" data-toggle="modal" data-target="#addProjectModel">新建项目</a>
+        <div style="margin: 10px 0;">
+            <a class="btn btn-primary" data-toggle="modal" data-target="#addProjectModel"> <i
+                    class="fa fa-plus-circle" aria-hidden="true"></i> 新建项目
+            </a>
+        </div>
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title"><i class="fa fa-star"></i> 我关注的</h3>
@@ -75,7 +79,7 @@
 
                         <div class="info">
                             <div>
-                                <a href="#">
+                                <a href="{% url 'project_unstar' project_type=item.type project_id=item.id %}">
                                     <i class="fa fa-star" aria-hidden="true" style="color: #f0ad4e;"></i>
                                 </a>
                                 <span>{{ item.creator.username }}</span>
