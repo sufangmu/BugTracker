@@ -1,0 +1,23 @@
+<ul class="nav navbar-nav">
+    <li class="dropdown active">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+           aria-expanded="false">项目<span class="caret"></span></a>
+        <ul class="dropdown-menu">
+            {% if mine %}
+                <li>我创建的</li>
+                {% for project in mine %}
+                    <li><a href="">{{ project.name }}</a></li>
+                {% endfor %}
+                <li role="separator" class="divider"></li>
+            {% endif %}
+            {% if join %}
+                <li>我参与的</li>
+                {% for project in join %}
+                    <li><a href="">{{ project.project.name }}</a></li>
+                {% endfor %}
+                <li role="separator" class="divider"></li>
+            {% endif %}
+            <li><a href="#">所有项目</a></li>
+        </ul>
+    </li>
+</ul>
