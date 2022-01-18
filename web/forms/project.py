@@ -9,6 +9,7 @@ from web.forms.bootstrap import BootStrapForm
 
 class ProjectModelForm(BootStrapForm, forms.ModelForm):
     """创建项目"""
+    bootstrap_class_exclude = ["color"]
 
     def __init__(self, request, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -17,8 +18,9 @@ class ProjectModelForm(BootStrapForm, forms.ModelForm):
     class Meta:
         model = models.Project
         fields = ["name", "color", "desc"]
-        widgets = {
+        widgets = {  # 修改前端渲染的form类型
             "desc": forms.Textarea(attrs={"style": "resize:none;"}),
+            "color": forms.RadioSelect,
         }
 
     def clean_name(self):
