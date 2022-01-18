@@ -5,6 +5,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from web import models
 from web.forms.bootstrap import BootStrapForm
+from web.forms.widgets import ColorRadioSelect
 
 
 class ProjectModelForm(BootStrapForm, forms.ModelForm):
@@ -20,7 +21,7 @@ class ProjectModelForm(BootStrapForm, forms.ModelForm):
         fields = ["name", "color", "desc"]
         widgets = {  # 修改前端渲染的form类型
             "desc": forms.Textarea(attrs={"style": "resize:none;"}),
-            "color": forms.RadioSelect,
+            "color": ColorRadioSelect,
         }
 
     def clean_name(self):
