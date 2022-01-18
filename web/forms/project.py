@@ -21,7 +21,7 @@ class ProjectModelForm(BootStrapForm, forms.ModelForm):
         fields = ["name", "color", "desc"]
         widgets = {  # 修改前端渲染的form类型
             "desc": forms.Textarea(attrs={"style": "resize:none;"}),
-            "color": ColorRadioSelect,
+            "color": ColorRadioSelect(attrs={"class": "color-radio"}),
         }
 
     def clean_name(self):
