@@ -10,6 +10,7 @@
             flex-direction: row;
             justify-content: space-between;
         }
+
         .title-list {
             border-right: 1px solid #dddddd;
             min-height: 500px;
@@ -40,16 +41,17 @@
                     目录
                 </div>
                 <div class="col-sm-9 content">
-                    <div style="text-align: center;margin-top: 50px">
-                        <h2>《{{ request.tracker.project.name }}》wiki文档库</h2>
-                        <h3>
-                            <a href="{% url 'wiki_add' project_id=request.tracker.project.id %}">
-                                <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                新建文章
-                            </a>
-                        </h3>
-                    </div>
-
+                    <form method="post">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="form-group">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                <span class="error-msg">{{ field.errors.0 }}</span>
+                            </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary">保 存</button>
+                    </form>
                 </div>
             </div>
         </div>
