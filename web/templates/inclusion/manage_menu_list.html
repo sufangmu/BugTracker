@@ -1,0 +1,5 @@
+{% for menu in menu_list %}
+    <li {% if menu.class %}
+        class="{{ menu.class }}"
+    {% endif %} ><a href={{ menu.url }}>{{ menu.title }}</a></li>
+{% endfor %}

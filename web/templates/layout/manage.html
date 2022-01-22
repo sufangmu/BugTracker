@@ -42,15 +42,9 @@
                 {% all_project_list request %}
                 <!-- 判断是否进入项目 -->
                 {% if  request.tracker.project %}
-                    <li><a href="#">概览</a></li>
-                    <li><a href="#">issue</a></li>
-                    <li><a href="#">统计</a></li>
-                    <li><a href="#">文件</a></li>
-                    <li><a href="#">wiki</a></li>
-                    <li><a href="#">设置</a></li>
-                    </ul>
-                {% endif %}
-
+                    {% manage_menu_list request %}
+                 {% endif %}
+            </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="#">工作台</a></li>
                 <li><a href="#">日历</a></li>
