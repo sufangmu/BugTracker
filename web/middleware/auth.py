@@ -11,6 +11,7 @@ class Tracker:
     def __init__(self):
         self.user = None
         self.price_policy = None
+        self.project = None
 
 
 class AuthMiddleware(MiddlewareMixin):
@@ -40,3 +41,23 @@ class AuthMiddleware(MiddlewareMixin):
             obj = models.Transaction.objects.filter(user=user_obj, status=2, price_policy__catepory=1).order_by(
                 "id").first()
         request.tracker.price_policy = obj.price_policy
+
+    def process_view(self, request, view, args, kwargs):
+        """路由匹配之后，视图函数之前"""
+
+        # 判断URL是否是以manage开头
+        if not request.path_info.startswith("/manage/"):
+            return
+        project_id = kwargs.get("project_id")
+        # 判断project_id 是否是我创建的或我参与的
+        user = request.tracker.user
+        project_obj = models.Project.objects.filter(creator=user, id=project_id).first()
+        if project_obj:
+            request.tracker.project = project_obj
+            return
+        project_user_obj = models.ProjectUser.objects.filter(user=user, id=project_id).first()
+        if project_user_obj:
+            request.tracker.project = project_user_obj.project
+            return
+
+        return redirect('project_list')
