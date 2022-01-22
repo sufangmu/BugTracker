@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # _*_ coding:utf-8 _*_
-from django.urls import path, re_path
+from django.urls import path, re_path, include
 from web.views import account
 from web.views import project
+from web.views import manage
 
 urlpatterns = [
     path('register/', account.register, name='register'),
@@ -15,5 +16,16 @@ urlpatterns = [
 
     path('project/list', project.project_list, name='project_list'),
     re_path(r'project/star/(?P<project_type>\w+)/(?P<project_id>\d+)/', project.project_star, name='project_star'),
-    re_path(r'project/unstar/(?P<project_type>\w+)/(?P<project_id>\d+)/', project.project_unstar, name='project_unstar'),
+    re_path(r'project/unstar/(?P<project_type>\w+)/(?P<project_id>\d+)/', project.project_unstar,
+            name='project_unstar'),
+    # 项目管理
+    re_path(r'manage/(?P<project_id>\d+)/', include([
+        path('dashboard/', manage.dashboard, name='dashboard'),
+        path('issue/', manage.issue, name='issue'),
+        path('statistics/', manage.statistics, name='statistics'),
+        path('file/', manage.file, name='file'),
+        path('wiki/', manage.wiki, name='wiki'),
+        path('setting/', manage.setting, name='setting'),
+    ], None)),
+
 ]

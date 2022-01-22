@@ -6,18 +6,18 @@
             {% if mine %}
                 <li>我创建的</li>
                 {% for project in mine %}
-                    <li><a href="">{{ project.name }}</a></li>
+                    <li><a href="{% url 'dashboard' project_id=project.id %}">{{ project.name }}</a></li>
                 {% endfor %}
                 <li role="separator" class="divider"></li>
             {% endif %}
             {% if join %}
                 <li>我参与的</li>
                 {% for project in join %}
-                    <li><a href="">{{ project.project.name }}</a></li>
+                    <li><a href="{% url 'dashboard' project_id=project.id %}">{{ project.project.name }}</a></li>
                 {% endfor %}
                 <li role="separator" class="divider"></li>
             {% endif %}
-            <li><a href="#">所有项目</a></li>
+            <li><a href="{% url 'project_list' %}">所有项目</a></li>
         </ul>
     </li>
 </ul>

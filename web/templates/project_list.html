@@ -94,7 +94,7 @@
             <div class="panel-body">
                 {% for item in projects.star %}
                     <div class="item">
-                        <a href="#" class="title"
+                        <a href="{% url 'dashboard' project_id=item.id %}" class="title"
                            style="background-color: {{ item.get_color_display }};">{{ item.name }}
                         </a>
 
@@ -121,7 +121,7 @@
             <div class="panel-body">
                 {% for item in projects.mine %}
                     <div class="item">
-                        <a href="#" class="title"
+                        <a href="{% url 'dashboard' project_id=item.id %}" class="title"
                            style="background-color: {{ item.get_color_display }};">{{ item.name }}
                         </a>
                         <div class="info">
@@ -147,13 +147,13 @@
             <div class="panel-body">
                 {% for item in projects.join %}
                     <div class="item">
-                        <a href="{% url 'project_star' project_type='join' project_id=item.id %}" class="title"
+                        <a href="{% url 'dashboard' project_id=item.id %}" class="title"
                            style="background-color: {{ item.get_color_display }};">{{ item.get_color_display }}
                         </a>
 
                         <div class="info">
                             <div>
-                                <a href="#">
+                                <a href="{% url 'project_star' project_type='join' project_id=item.id %}">
                                     <i class="fa fa-star" aria-hidden="true" style="color: #d5d5d5;"></i>
                                 </a>
                                 <span>{{ item.creator.username }}</span>
