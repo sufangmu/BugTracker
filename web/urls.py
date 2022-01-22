@@ -4,6 +4,7 @@ from django.urls import path, re_path, include
 from web.views import account
 from web.views import project
 from web.views import manage
+from web.views import wiki
 
 urlpatterns = [
     path('register/', account.register, name='register'),
@@ -24,7 +25,7 @@ urlpatterns = [
         path('issue/', manage.issue, name='issue'),
         path('statistics/', manage.statistics, name='statistics'),
         path('file/', manage.file, name='file'),
-        path('wiki/', manage.wiki, name='wiki'),
+        path('wiki/', wiki.wiki, name='wiki'),
         path('setting/', manage.setting, name='setting'),
     ], None)),
 

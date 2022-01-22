@@ -9,13 +9,13 @@ register = template.Library()
 
 
 @register.inclusion_tag("inclusion/all_project_list.html")
-def all_project_list(reqeust):
-    user = reqeust.tracker.user
+def all_project_list(request):
+    user = request.tracker.user
     # 获取我创建的所有项目
     mine = models.Project.objects.filter(creator=user)
     # 获取我参与的所有项目
     join = models.ProjectUser.objects.filter(user=user)
-    return {"mine": mine, "join": join}
+    return {"mine": mine, "join": join, "request": request}
 
 
 @register.inclusion_tag('inclusion/manage_menu_list.html')

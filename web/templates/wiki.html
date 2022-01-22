@@ -1,4 +1,41 @@
 {% extends 'layout/manage.html' %}
-{% block content %}
+{% block css %}
+    <style>
+        .panel-body {
+            padding: 0;
+        }
 
+        .title-list {
+            border-right: 1px solid #dddddd;
+            min-height: 500px;
+        }
+
+        .content {
+            border-left: 1px solid #dddddd;
+            min-height: 600px;
+            margin-left: -1px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-book"></i> 文档</h3>
+            </div>
+            <div class="panel-body">
+                <div class="col-sm-3 title-list">
+                    目录
+                </div>
+                <div class="col-sm-9 content">
+                    <div style="text-align: center;margin-top: 50px">
+                        <h2>《{{ request.tracker.project.name }}》wiki文档库</h2>
+                        <h3><a href=""><i class="fa fa-plus-circle" aria-hidden="true"></i>新建文章</a>
+                        </h3>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
