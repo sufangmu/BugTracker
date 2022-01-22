@@ -12,9 +12,9 @@ def wiki(request, project_id):
 
 
 def wiki_add(request, project_id):
-    form = WikiModelForm()
+    form = WikiModelForm(request)
     if request.method == "POST":
-        form = WikiModelForm(request.POST)
+        form = WikiModelForm(request, data=request.POST)
         if form.is_valid():
             form.instance.project = request.tracker.project
             form.save()
