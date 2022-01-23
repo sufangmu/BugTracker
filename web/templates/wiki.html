@@ -1,5 +1,7 @@
 {% extends 'layout/manage.html' %}
+{% load static %}
 {% block css %}
+    <link rel="stylesheet" href="{% static 'plugin/editor.md/css/editormd.preview.min.css' %}">
     <style>
         .panel-body {
             padding: 0;
@@ -31,7 +33,7 @@
             margin-left: -1px;
         }
 
-        .editormd-fullscreen{
+        .editormd-fullscreen {
             z-index: 1001;
         }
 
@@ -68,7 +70,9 @@
                 </div>
                 <div class="col-sm-9 content">
                     {% if wiki %}
-                        {{ wiki.content }}
+                        <div id="previewMarkdown">
+                            <textarea>{{ wiki.content }}</textarea>
+                        </div>
                     {% else %}
                         <div style="text-align: center;margin-top: 50px">
                             <h2>《{{ request.tracker.project.name }}》wiki文档库</h2>
@@ -87,12 +91,26 @@
 {% endblock %}
 
 {% block js %}
+    <script src="{% static 'plugin/editor.md/editormd.min.js' %}"></script>
+    <script src="{% static 'plugin/editor.md/lib/marked.min.js' %}"></script>
+    <script src="{% static 'plugin/editor.md/lib/prettify.min.js' %}"></script>
+    <script src="{% static 'plugin/editor.md/lib/raphael.min.js' %}"></script>
+    <script src="{% static 'plugin/editor.md/lib/underscore.min.js' %}"></script>
+    <script src="{% static 'plugin/editor.md/lib/sequence-diagram.min.js' %}"></script>
+    <script src="{% static 'plugin/editor.md/lib/flowchart.min.js' %}"></script>
     <script>
         let WIKI_DETAIL_URL = "{% url 'wiki' project_id=request.tracker.project.id %}"
 
         $(function () {
             initCatalog();
+            initPreviewMarkdown();
         });
+
+        function initPreviewMarkdown() {
+            editormd.markdownToHTML("previewMarkdown", {
+                htmlDebode: "style,script,iframe",
+            })
+        };
 
         function initCatalog() {
             $.ajax({
