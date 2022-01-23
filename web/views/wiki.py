@@ -24,6 +24,24 @@ def wiki_delete(request, project_id, wiki_id):
     return redirect(reverse('wiki', kwargs={"project_id": project_id}))
 
 
+def wiki_edit(request, project_id, wiki_id):
+    """编辑文档"""
+    wiki_obj = models.Wiki.objects.filter(project_id=project_id, id=wiki_id).first()
+    if not wiki_id:
+        return redirect(reverse('wiki', kwargs={"project_id": project_id}))
+    form = WikiModelForm(request, instance=wiki_obj)
+    if request.method == "POST":
+        form = WikiModelForm(request, data=request.POST, instance=wiki_obj)
+        if form.is_valid():
+            if form.instance.parent:
+                form.instance.depth = form.instance.parent.depth + 1
+            else:
+                form.instance.depth = 1
+            form.save()
+            return redirect(reverse('wiki', kwargs={"project_id": project_id}) + "?id=" + wiki_id)
+    return render(request, 'wiki_form.html', {"form": form})
+
+
 def wiki_add(request, project_id):
     form = WikiModelForm(request)
     if request.method == "POST":
@@ -37,7 +55,7 @@ def wiki_add(request, project_id):
             form.instance.project = request.tracker.project
             form.save()
             return redirect(reverse('wiki', kwargs={"project_id": project_id}))
-    return render(request, "wiki_add.html", {"form": form})
+    return render(request, "wiki_form.html", {"form": form})
 
 
 def wiki_catalog(request, project_id):

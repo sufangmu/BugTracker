@@ -48,7 +48,11 @@
                     {% if wiki %}
                         <a href="{% url 'wiki_delete' project_id=request.tracker.project.id wiki_id=wiki.id %}"
                            class="btn btn-danger btn-xs">
-                            <i class="fa fa-edit" aria-hidden="true"> 删除</i>
+                            <i class="fa fa-trash" aria-hidden="true"> 删除</i>
+                        </a>
+                        <a href="{% url 'wiki_edit' project_id=request.tracker.project.id wiki_id=wiki.id %}"
+                           class="btn btn-primary btn-xs">
+                            <i class="fa fa-edit" aria-hidden="true"> 编辑</i>
                         </a>
                     {% endif %}
                 </div>
@@ -73,8 +77,6 @@
                             </h3>
                         </div>
                     {% endif %}
-
-
                 </div>
             </div>
         </div>

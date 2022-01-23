@@ -28,6 +28,7 @@ urlpatterns = [
         path('wiki/', wiki.wiki, name='wiki'),
         path('wiki/add/', wiki.wiki_add, name='wiki_add'),
         re_path(r'wiki/delete/(?P<wiki_id>\d+)/', wiki.wiki_delete, name='wiki_delete'),
+        re_path(r'wiki/edit/(?P<wiki_id>\d+)/', wiki.wiki_edit, name='wiki_edit'),
 
         path('wiki/catalog/', wiki.wiki_catalog, name='wiki_catalog'),
         path('setting/', manage.setting, name='setting'),
