@@ -18,6 +18,11 @@ def wiki_add(request, project_id):
     if request.method == "POST":
         form = WikiModelForm(request, data=request.POST)
         if form.is_valid():
+            # 判断用户是否已经选择父文档
+            if form.instance.parent:
+                form.instance.depth = form.instance.parent.depth + 1
+            else:
+                form.instance.depth = 1
             form.instance.project = request.tracker.project
             form.save()
             return redirect(reverse('wiki', kwargs={"project_id": project_id}))
@@ -26,5 +31,5 @@ def wiki_add(request, project_id):
 
 def wiki_catalog(request, project_id):
     """wiki目录"""
-    catalog = models.Wiki.objects.filter(project_id=project_id).values("id", "title", "parent")
+    catalog = models.Wiki.objects.filter(project_id=project_id).values("id", "title", "parent").order_by("depth", "id")
     return JsonResponse({"status": True, "data": list(catalog)})

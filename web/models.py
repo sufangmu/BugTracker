@@ -86,5 +86,7 @@ class Wiki(models.Model):
     parent = models.ForeignKey(verbose_name="父文档", to="self", null=True, blank=True, on_delete=models.DO_NOTHING,
                                related_name="children")
 
+    depth = models.IntegerField(verbose_name="深度", default=1)
+
     def __str__(self):
         return self.title
