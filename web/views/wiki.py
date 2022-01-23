@@ -14,7 +14,6 @@ def wiki(request, project_id):
     if not wiki_id or not wiki_id.isdecimal:
         return render(request, "wiki.html")
     wiki_obj = models.Wiki.objects.filter(id=wiki_id, project_id=project_id).first()
-    print(wiki_obj.id, type(wiki_obj.id))
     return render(request, "wiki.html", {"wiki": wiki_obj})
 
 
