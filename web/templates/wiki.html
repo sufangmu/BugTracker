@@ -41,11 +41,18 @@
                 <div>
                     <h3 class="panel-title"><i class="fa fa-book"></i> 文档</h3>
                 </div>
-                <div class="add_wiki right">
+                <div class="edit_wiki">
                     <a href="{% url 'wiki_add' project_id=request.tracker.project.id %}" class="btn btn-success btn-xs">
                         <i class="fa fa-plus-circle" aria-hidden="true"> 新建</i>
                     </a>
+                    {% if wiki %}
+                        <a href="{% url 'wiki_delete' project_id=request.tracker.project.id wiki_id=wiki.id %}"
+                           class="btn btn-danger btn-xs">
+                            <i class="fa fa-edit" aria-hidden="true"> 删除</i>
+                        </a>
+                    {% endif %}
                 </div>
+
             </div>
             <div class="panel-body">
                 <div class="col-sm-3 title-list">

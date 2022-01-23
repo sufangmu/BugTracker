@@ -14,7 +14,14 @@ def wiki(request, project_id):
     if not wiki_id or not wiki_id.isdecimal:
         return render(request, "wiki.html")
     wiki_obj = models.Wiki.objects.filter(id=wiki_id, project_id=project_id).first()
+    print(wiki_obj.id, type(wiki_obj.id))
     return render(request, "wiki.html", {"wiki": wiki_obj})
+
+
+def wiki_delete(request, project_id, wiki_id):
+    """删除文档"""
+    models.Wiki.objects.filter(project_id=project_id, id=wiki_id).delete()
+    return redirect(reverse('wiki', kwargs={"project_id": project_id}))
 
 
 def wiki_add(request, project_id):

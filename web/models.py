@@ -82,8 +82,8 @@ class Wiki(models.Model):
     """Wiki"""
     title = models.CharField(verbose_name="标题", max_length=255, default='')
     content = models.TextField(verbose_name="内容")
-    project = models.ForeignKey(to=Project, verbose_name="项目", on_delete=models.DO_NOTHING)
-    parent = models.ForeignKey(verbose_name="父文档", to="self", null=True, blank=True, on_delete=models.DO_NOTHING,
+    project = models.ForeignKey(to="Project", verbose_name="项目", on_delete=models.DO_NOTHING)
+    parent = models.ForeignKey(verbose_name="父文档", to="self", null=True, blank=True, on_delete=models.SET_NULL,
                                related_name="children")
 
     depth = models.IntegerField(verbose_name="深度", default=1)
