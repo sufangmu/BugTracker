@@ -71,6 +71,8 @@
 
 {% block js %}
     <script>
+        let WIKI_DETAIL_URL = "{% url 'wiki' project_id=request.tracker.project.id %}"
+
         $(function () {
             initCatalog();
         });
@@ -83,7 +85,8 @@
                 success: function (res) {
                     if (res.status) {
                         $.each(res.data, function (index, item) {
-                            let li = $("<li>").attr("id", "id_" + item.id).append($("<a>").text(item.title)).append($("<ul>"))
+                            let href = WIKI_DETAIL_URL + "?id=" + item.id;
+                            let li = $("<li>").attr("id", "id_" + item.id).append($("<a>").text(item.title).attr("href", href)).append($("<ul>"))
                             if (!item.parent) {
                                 $("#catalog").append(li)
                             } else {

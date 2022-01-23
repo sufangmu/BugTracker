@@ -10,6 +10,11 @@ from web.forms.wiki import WikiModelForm
 
 
 def wiki(request, project_id):
+    wiki_id = request.GET.get("id")
+    if wiki_id:
+        pass
+    else:
+        pass
     return render(request, "wiki.html")
 
 
