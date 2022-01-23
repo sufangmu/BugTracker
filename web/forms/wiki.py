@@ -3,6 +3,7 @@
 # filename: wiki.py
 
 from django import forms
+from django.db.models import Q
 from web import models
 from web.forms.bootstrap import BootStrapForm
 
@@ -17,6 +18,7 @@ class WikiModelForm(BootStrapForm, forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.request = request
         choice_list = [("", "请选择"), ]
-        wiki_obj = models.Wiki.objects.filter(project=self.request.tracker.project).values_list("id", "title")
+        wiki_obj = models.Wiki.objects.filter(
+            Q(project=self.request.tracker.project) & ~Q(id=self.instance.id)).values_list("id", "title")
         choice_list.extend(wiki_obj)
         self.fields["parent"].choices = choice_list
