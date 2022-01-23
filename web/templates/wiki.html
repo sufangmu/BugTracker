@@ -53,15 +53,20 @@
                     </ul>
                 </div>
                 <div class="col-sm-9 content">
-                    <div style="text-align: center;margin-top: 50px">
-                        <h2>《{{ request.tracker.project.name }}》wiki文档库</h2>
-                        <h3>
-                            <a href="{% url 'wiki_add' project_id=request.tracker.project.id %}">
-                                <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                新建文章
-                            </a>
-                        </h3>
-                    </div>
+                    {% if wiki %}
+                        {{ wiki.content }}
+                    {% else %}
+                        <div style="text-align: center;margin-top: 50px">
+                            <h2>《{{ request.tracker.project.name }}》wiki文档库</h2>
+                            <h3>
+                                <a href="{% url 'wiki_add' project_id=request.tracker.project.id %}">
+                                    <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                    新建文章
+                                </a>
+                            </h3>
+                        </div>
+                    {% endif %}
+
 
                 </div>
             </div>

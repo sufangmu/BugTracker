@@ -11,11 +11,10 @@ from web.forms.wiki import WikiModelForm
 
 def wiki(request, project_id):
     wiki_id = request.GET.get("id")
-    if wiki_id:
-        pass
-    else:
-        pass
-    return render(request, "wiki.html")
+    if not wiki_id or not wiki_id.isdecimal:
+        return render(request, "wiki.html")
+    wiki_obj = models.Wiki.objects.filter(id=wiki_id, project_id=project_id).first()
+    return render(request, "wiki.html", {"wiki": wiki_obj})
 
 
 def wiki_add(request, project_id):
