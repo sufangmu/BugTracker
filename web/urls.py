@@ -27,6 +27,7 @@ urlpatterns = [
         path('file/', manage.file, name='file'),
         path('wiki/', wiki.wiki, name='wiki'),
         path('wiki/add/', wiki.wiki_add, name='wiki_add'),
+        path('wiki/catalog/', wiki.wiki_catalog, name='wiki_catalog'),
         path('setting/', manage.setting, name='setting'),
     ], None)),
 
