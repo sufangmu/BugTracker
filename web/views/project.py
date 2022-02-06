@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # _*_ coding:utf-8 _*_
 # filename: project.py
+import time
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from web.forms.project import ProjectModelForm
 from web import models
+from web.utils.tencent import cos
 
 
 def project_list(request):
@@ -41,6 +43,10 @@ def project_list(request):
     if request.method == "POST":
         form = ProjectModelForm(request, data=request.POST)
         if form.is_valid():
+            # 为项目创建桶
+            bucket = "{}-{}".format(request.tracker.user.mobile_phone, str(int(time.time())))
+            cos.create_bucket(bucket)
+            form.instance.bucket = bucket
             # Project中creator是必须要有的字段，此处需要添加上
             form.instance.creator = request.tracker.user
             form.save()

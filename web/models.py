@@ -65,7 +65,7 @@ class Project(models.Model):
     join_count = models.SmallIntegerField(verbose_name="参与人数", default=1)
     creator = models.ForeignKey(verbose_name="创建者", to="UserInfo", on_delete=models.DO_NOTHING)
     create_datetime = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
-
+    bucket = models.CharField(verbose_name="COS桶", max_length=128)
     # 便于查询，但无法完成增加，删除，修改操作，此外through_fields字段顺序要与ProjectUser保持一致
     # project_user = models.ManyToManyField(to="UserInfo", through="ProjectUser", through_fields=("project", "user"))
 
@@ -82,7 +82,7 @@ class Wiki(models.Model):
     """Wiki"""
     title = models.CharField(verbose_name="标题", max_length=255, default='')
     content = models.TextField(verbose_name="内容")
-    project = models.ForeignKey(to="Project", verbose_name="项目", on_delete=models.DO_NOTHING)
+    project = models.ForeignKey(to="Project", verbose_name="项目", on_delete=models.SET_NULL, null=True)
     parent = models.ForeignKey(verbose_name="父文档", to="self", null=True, blank=True, on_delete=models.SET_NULL,
                                related_name="children")
 
