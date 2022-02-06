@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 from web.forms.project import ProjectModelForm
 from web import models
 from web.utils.tencent import cos
+from django.conf import settings
 
 
 def project_list(request):
@@ -44,7 +45,8 @@ def project_list(request):
         form = ProjectModelForm(request, data=request.POST)
         if form.is_valid():
             # 为项目创建桶
-            bucket = "{}-{}".format(request.tracker.user.mobile_phone, str(int(time.time())))
+            bucket = "{}-{}-{}".format(request.tracker.user.mobile_phone, str(int(time.time())),
+                                       settings.TENCENT_APP_ID)
             cos.create_bucket(bucket)
             form.instance.bucket = bucket
             # Project中creator是必须要有的字段，此处需要添加上

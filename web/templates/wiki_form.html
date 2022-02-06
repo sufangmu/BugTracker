@@ -85,7 +85,7 @@
     <script src="{% static 'plugin/editor.md/editormd.min.js' %}"></script>
     <script>
         let WIKI_DETAIL_URL = "{% url 'wiki' project_id=request.tracker.project.id %}"
-
+        let WIKI_UPLOAD_URL = "{% url 'wiki_upload' project_id=request.tracker.project.id %}"
         $(function () {
             initCatalog();
             initEditorMd();
@@ -95,7 +95,10 @@
             editormd("editor", {
                 placeholder: "在此输入内容",
                 height: 500,
-                path: "{% static 'plugin/editor.md/lib/' %}"
+                path: "{% static 'plugin/editor.md/lib/' %}",
+                imageUpload: true,
+                imageFormats:["jpg","jpeg","png","gif"],
+                imageUploadURL: WIKI_UPLOAD_URL,
             })
         }
 

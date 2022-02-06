@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 # _*_ coding:utf-8 _*_
 # filename: wiki.py
+import uuid
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
-
+from django.views.decorators.csrf import csrf_exempt
 from web import models
 from web.forms.wiki import WikiModelForm
+from web.utils.tencent import cos
 
 
 def wiki(request, project_id):
@@ -55,6 +57,28 @@ def wiki_add(request, project_id):
             form.save()
             return redirect(reverse('wiki', kwargs={"project_id": project_id}))
     return render(request, "wiki_form.html", {"form": form})
+
+
+@csrf_exempt
+def wiki_upload(request, project_id):
+    """上传图片"""
+    res = {
+        "success": 0,
+        "message": None,
+        "url": None,
+    }
+    file_obj = request.FILES.get("editormd-image-file")
+    if not file_obj:
+        res["message"] = "文件不存在"
+        return JsonResponse(res)
+    bucket = request.tracker.project.bucket
+    # 文件上传到桶中
+    file_suffix = file_obj.name.rsplit(".")[-1]
+    file_name = "{}.{}".format(uuid.uuid4(), file_suffix)
+    url = cos.upload_file(bucket, file_obj, file_name)
+    res["success"] = 1
+    res["url"] = url
+    return JsonResponse(res)
 
 
 def wiki_catalog(request, project_id):
