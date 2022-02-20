@@ -1,3 +1,4 @@
+from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import render
 from web.forms.file import FolderModelForm
@@ -13,6 +14,12 @@ def file(request, project_id):
                                                              project=request.tracker.project).first()
 
     if request.method == "GET":
+        breadcrumb_list = []
+        parent = parent_object
+        while parent:
+            # breadcrumb_list.insert(0, {"id": parent.id, "name": parent.name})
+            breadcrumb_list.insert(0, model_to_dict(parent, ["id", "name"]))
+            parent = parent.parent
         # 获取当前当前目录下所欲的文件和文件夹
         queryset = models.FileRepository.objects.filter(project=request.tracker.project)
         if folder_id:
@@ -21,7 +28,12 @@ def file(request, project_id):
             # 根路径
             file_obj_list = queryset.filter(parent__isnull=True).order_by("-file_type")
         form = FolderModelForm(request, parent_object)
-        return render(request, "file.html", {"form": form, "file_obj_list": file_obj_list})
+        context = {
+            "form": form,
+            "file_obj_list": file_obj_list,
+            "breadcrumb_list": breadcrumb_list
+        }
+        return render(request, "file.html", context)
     if request.method == "POST":
         form = FolderModelForm(request, parent_object, data=request.POST)
         if form.is_valid():

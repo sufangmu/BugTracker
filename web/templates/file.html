@@ -21,7 +21,19 @@
         <div class="panel panel-default" style="margin-top: 20px">
             <!-- Default panel contents -->
             <div class="panel-heading">
-                <div></div>
+                <div>
+                    <a href="{% url 'file' project_id=request.tracker.project.id %}">
+                        <i class="fa fa-home" aria-hidden="true"></i>
+                        <span>文件库</span>
+                    </a>
+                    {% for breadcrumb in breadcrumb_list %}
+                        <a href="{% url 'file' project_id=request.tracker.project.id %}?folder={{ breadcrumb.id }}">
+                            <i class="fa fa-caret-right" aria-hidden="true"></i>
+                            <span>{{ breadcrumb.name }}</span>
+                        </a>
+                    {% endfor %}
+
+                </div>
                 <div>
                     <a class="btn btn-success btn-xs" data-toggle="modal" data-target="#addModal" data-whatever="新建文件夹">
                         <i class="fa fa-plus-circle" aria-hidden="true">新建文件夹</i>
