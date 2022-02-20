@@ -6,16 +6,17 @@ from web import models
 
 def file(request, project_id):
     """获取文件列表、添加文件夹"""
-
-    if request.method == "GET":
-        form = FolderModelForm()
-        return render(request, "file.html", {"form": form})
     parent_object = None
     folder_id = request.GET.get("folder", "")
     if folder_id.isdecimal():
-        parent_object = models.FileRepository.objects.filter(id=int(folder_id), file_type=2, project=request.tracker.project).first()
+        parent_object = models.FileRepository.objects.filter(id=int(folder_id), file_type=2,
+                                                             project=request.tracker.project).first()
+
+    if request.method == "GET":
+        form = FolderModelForm(request, parent_object)
+        return render(request, "file.html", {"form": form})
     if request.method == "POST":
-        form = FolderModelForm(request.POST)
+        form = FolderModelForm(request, parent_object, data=request.POST)
         if form.is_valid():
             form.instance.project = request.tracker.project
             form.instance.update_user = request.tracker.user
