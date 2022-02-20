@@ -80,7 +80,6 @@
 
 {% block js %}
     <script>
-        let FOLDER_URL = "{% url 'file' project_id=request.tracker.project.id %}"
         $(function () {
             initAddModel();
             bindModelSubmit();
@@ -99,7 +98,7 @@
         function bindModelSubmit() {
             $('#btnFormSubmit').click(function () {
                 $.ajax({
-                    url: "",
+                    url: location.href,
                     type: "POST",
                     data: $("#folderForm").serialize(),
                     dataType: "JSON",
