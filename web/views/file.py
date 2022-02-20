@@ -13,8 +13,15 @@ def file(request, project_id):
                                                              project=request.tracker.project).first()
 
     if request.method == "GET":
+        # 获取当前当前目录下所欲的文件和文件夹
+        queryset = models.FileRepository.objects.filter(project=request.tracker.project)
+        if folder_id:
+            file_obj_list = queryset.filter(parent=parent_object).order_by("-file_type")
+        else:
+            # 根路径
+            file_obj_list = queryset.filter(parent__isnull=True).order_by("-file_type")
         form = FolderModelForm(request, parent_object)
-        return render(request, "file.html", {"form": form})
+        return render(request, "file.html", {"form": form, "file_obj_list": file_obj_list})
     if request.method == "POST":
         form = FolderModelForm(request, parent_object, data=request.POST)
         if form.is_valid():

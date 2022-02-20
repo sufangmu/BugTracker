@@ -33,19 +33,42 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th>#</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Username</th>
+                    <th>名称</th>
+                    <th>文件大小</th>
+                    <th>更新者</th>
+                    <th>更新时间</th>
+                    <th>操作</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                </tr>
+                {% for item in file_obj_list %}
+                    <tr>
+                        <td>
+                            {% if item.file_type == 2 %}
+                                <a href="{% url 'file' project_id=request.tracker.project.id %}?folder={{ item.id }}">
+                                    <i class="fa fa-folder"></i>
+                                    {{ item.name }}
+                                </a>
+                            {% else %}
+                                <i class="fa fa-file"></i>
+                                {{ item.name }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.file_type == 1 %}
+                                {{ item.file_size }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ item.update_user.username }}</td>
+                        <td>{{ item.update_datetime }}</td>
+                        <td>
+                            <a href="">编辑</a>
+                            <a href="">删除</a>
+                        </td>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>
@@ -98,6 +121,7 @@
                 $('#folderForm')[0].reset();
             })
         }
+
         function bindModelSubmit() {
             $('#btnFormSubmit').click(function () {
                 $.ajax({
@@ -106,9 +130,9 @@
                     data: $("#folderForm").serialize(),
                     dataType: "JSON",
                     success: function (res) {
-                        if(res.status){
+                        if (res.status) {
                             location.href = location.href
-                        }else{
+                        } else {
                             $.each(res.error, function (key, value) {
                                 $('#id_' + key).next().text(value[0]);
                             })
