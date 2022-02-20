@@ -35,7 +35,15 @@ def file(request, project_id):
         }
         return render(request, "file.html", context)
     if request.method == "POST":
-        form = FolderModelForm(request, parent_object, data=request.POST)
+        fid = request.POST.get("fid", '')
+        edit_obj = None
+        if fid.isdecimal():
+            edit_obj = models.FileRepository.objects.filter(id=int(fid), file_type=2, project=request.tracker.project).first()
+        if edit_obj:
+            form = FolderModelForm(request, parent_object, data=request.POST, instance=edit_obj)
+        else:
+            form = FolderModelForm(request, parent_object, data=request.POST)
+
         if form.is_valid():
             form.instance.project = request.tracker.project
             form.instance.update_user = request.tracker.user

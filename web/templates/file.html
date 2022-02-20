@@ -76,7 +76,12 @@
                         <td>{{ item.update_user.username }}</td>
                         <td>{{ item.update_datetime }}</td>
                         <td>
-                            <a href="">编辑</a>
+                            {% if item.file_type == 2 %}
+                                <a href="" class="btn btn-default btn-xs" data-toggle="modal" data-target="#addModal"
+                                   data-whatever="编辑文件夹" data-name="{{ item.name }}" data-fid="{{ item.id }}">
+                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                </a>
+                            {% endif %}
                             <a href="">删除</a>
                         </td>
                     </tr>
@@ -96,6 +101,7 @@
                 <div class="modal-body">
                     <form id="folderForm">
                         {% csrf_token %}
+                        <input type="text" name="fid" id="fid" class="hidden">
                         {% for field in form %}
                             <div class="form-group">
                                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
@@ -125,12 +131,23 @@
             $('#addModal').on('show.bs.modal', function (event) {
                 let button = $(event.relatedTarget); // Button that triggered the modal
                 let recipient = button.data('whatever'); // Extract info from data-* attributes
+                let name = button.data('name'); // Extract info from data-* attributes
+                let fid = button.data('fid'); // Extract info from data-* attributes
                 // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
                 // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
                 let modal = $(this);
                 modal.find('.modal-title').text(recipient);
-                modal.find('.error-msg').empty();
-                $('#folderForm')[0].reset();
+                if (fid) {
+                    // 编辑
+                    modal.find('#id_name').val(name);
+                    modal.find('#fid').val(fid);
+                } else {
+                    // 新建
+                    modal.find('.error-msg').empty();
+                    $('#folderForm')[0].reset();
+                }
+
+
             })
         }
 
