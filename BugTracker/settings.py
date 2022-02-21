@@ -147,9 +147,9 @@ WHITE_URL_REGEX_LIST = [
     '/',
 ]
 
-TENCENT_APP_ID = "1254233918"
-TENCENT_SECRET_ID = "AKIDiJeiV1HGzRdYBXdSzFExPaU8UZlgLjqi"
-TENCENT_SECRET_KEY = "dz4rOfeMnysVrynLccLnyrd8MJ0QZR3O"
+TENCENT_APP_ID = "xxx"
+TENCENT_SECRET_ID = "xxx"
+TENCENT_SECRET_KEY = "xxx"
 
 try:
     from .dev_settings import *

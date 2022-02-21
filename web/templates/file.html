@@ -1,4 +1,5 @@
 {% extends 'layout/manage.html' %}
+{% load static %}
 {% block css %}
     <style>
         .panel-default .panel-heading {
@@ -156,8 +157,31 @@
 {% endblock %}
 
 {% block js %}
+    <script src="{% static 'js/cos-js-sdk-v5.min.js' %}"></script>
     <script>
+
         let FILE_DELETE_URL = "{% url 'file_delete' project_id=request.tracker.project.id %}"
+        let COS_CREDENTIAL = "{% url 'cos_credential' project_id=request.tracker.project.id %}"
+
+        let COS_OBJECT = new COS({
+            getAuthorization: function (options, callback) {
+                $.get(COS_CREDENTIAL, {
+
+                }, function (data) {
+                    let credentials = data && data.credentials;
+                    if (!data || !credentials){
+                        return console.error('credentials invalid')
+                    }
+                    callback({
+                        TmpSecretId: credentials.tmpSecretId,
+                        TmpSecretKey: credentials.tmpSecretKey,
+                        XCosSecurityToken: credentials.sessionToken,
+                        StartTime: data.startTime, // 时间戳，单位秒，如：1580000000，建议返回服务器时间作为签名的开始时间，避免用户浏览器本地时间偏差过大导致签名错误
+                        ExpiredTime: data.expiredTime, // 时间戳，单位秒，如：1580000900
+                    });
+                })
+            }
+        })
         $(function () {
             initAddModel();
             bindModelSubmit();
@@ -169,10 +193,24 @@
             $('#uploadFile').change(function () {
                 let fileList = $(this)[0].files;
                 $.each(fileList, function (index, fileObject) {
-                    console.log(fileObject.name)
+                    let fileName = fileObject.name
+                    // 上传文件（异步）
+                    COS_OBJECT.putObject({
+                        Bucket: "{{ request.tracker.project.bucket }}",
+                        Region: "ap-beijing",
+                        Key: fileName,
+                        Body: fileObject,
+                        onProgress: function (processData) {
+                            console.log("文件上传进度-->", fileName, JSON.stringify(processData));
+                        }, function(err, data) {
+                            console.log(err || data);
+                        }
+
+                    })
                 })
             })
         }
+
         function bindDeleteSubmit() {
             $('#btnDelete').click(function () {
                 $.ajax({

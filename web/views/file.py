@@ -1,6 +1,10 @@
+import json
+
 from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+
 from web.forms.file import FolderModelForm
 from web import models
 from web.utils.tencent import cos
@@ -91,3 +95,9 @@ def file_delete(request, project_id):
                 request.tracker.project.save()
         delete_obj.delete()
         return JsonResponse({"status": True})
+
+
+def cos_credential(request, project_id):
+    """ 获取cos上传临时凭证 """
+    data_dict = cos.credential(request.tracker.project.bucket)
+    return JsonResponse(data_dict)
