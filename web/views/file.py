@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from web.forms.file import FolderModelForm
 from web import models
+from web.utils.tencent import cos
 
 
 def file(request, project_id):
@@ -60,8 +61,33 @@ def file_delete(request, project_id):
     delete_obj = models.FileRepository.objects.filter(id=fid, project=request.tracker.project).first()
     if delete_obj.file_type == 1:
         # 删除文件
-        pass
+        # 释放空间
+        request.tracker.project.use_space -= delete_obj.file_size
+        request.tracker.project.save()
+        # 删除COS中的文件
+        cos.delete_file(request.tracker.project.bucket, delete_obj.key)
+        # 删除数据库中的记录
+        delete_obj.delete()
     else:
-        pass
-    delete_obj.delete()
-    return JsonResponse({"status": True})
+        # 删除目录
+        total_size = 0
+        key_list = []
+        folder_list = [delete_obj, ]
+        for folder in folder_list:
+            child_list = models.FileRepository.objects.filter(project=request.tracker.project, parent=folder).order_by(
+                "-file_type")
+            for child in child_list:
+                if child.file_type == 2:
+                    folder_list.append(child)
+                else:
+                    total_size += child.file_size
+                    key_list.append({"Key": child.key})
+            # 批量删除文件
+            if key_list:
+                cos.delete_files(request.tracker.project.bucket, child.key)
+            # 归还容量
+            if total_size:
+                request.tracker.project.use_space -= total_size
+                request.tracker.project.save()
+        delete_obj.delete()
+        return JsonResponse({"status": True})

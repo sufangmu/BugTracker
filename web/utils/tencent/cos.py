@@ -32,3 +32,21 @@ def upload_file(bucket, file_obj, file_name):
         Key=file_name,
     )
     return "https://{}.cos.{}.myqcloud.com/{}".format(bucket, region, file_name)
+
+
+def delete_file(bucket, file_name):
+    client.delete_object(
+        Bucket=bucket,
+        Key=file_name,
+    )
+
+
+def delete_files(bucket, file_list):
+    objects = {
+        "Quiet": "true",
+        "Object": file_list
+    }
+    client.delete_objects(
+        Bucket=bucket,
+        Delete=objects,
+    )
