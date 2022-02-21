@@ -38,7 +38,8 @@ def file(request, project_id):
         fid = request.POST.get("fid", '')
         edit_obj = None
         if fid.isdecimal():
-            edit_obj = models.FileRepository.objects.filter(id=int(fid), file_type=2, project=request.tracker.project).first()
+            edit_obj = models.FileRepository.objects.filter(id=int(fid), file_type=2,
+                                                            project=request.tracker.project).first()
         if edit_obj:
             form = FolderModelForm(request, parent_object, data=request.POST, instance=edit_obj)
         else:
@@ -52,3 +53,15 @@ def file(request, project_id):
             form.save()
             return JsonResponse({"status": True})
         return JsonResponse({"status": False, "error": form.errors})
+
+
+def file_delete(request, project_id):
+    fid = request.GET.get("fid")
+    delete_obj = models.FileRepository.objects.filter(id=fid, project=request.tracker.project).first()
+    if delete_obj.file_type == 1:
+        # 删除文件
+        pass
+    else:
+        pass
+    delete_obj.delete()
+    return JsonResponse({"status": True})

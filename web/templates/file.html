@@ -82,7 +82,10 @@
                                     <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                 </a>
                             {% endif %}
-                            <a href="">删除</a>
+                            <a class="btn btn-danger btn-xs" data-toggle="modal" data-target="#deleteModal"
+                               data-fid="{{ item.id }}">
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -118,14 +121,45 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="alert alert-danger alert-dismissible fade in" role="alert">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">×</span></button>
+                <h4>是否确认删除</h4>
+                <p style="padding-top: 20px; padding-bottom: 20px">文件中包含的所有文件都会被删除</p>
+                <p style="text-align: right">
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">取 消</button>
+                    <button type="button" class="btn btn-danger btn-sm" id="btnDelete">确 定</button>
+                </p>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block js %}
     <script>
+        let FILE_DELETE_URL = "{% url 'file_delete' project_id=request.tracker.project.id %}"
         $(function () {
             initAddModel();
             bindModelSubmit();
+            bindDeleteSubmit();
         });
+
+        function bindDeleteSubmit() {
+            $('#btnDelete').click(function () {
+                $.ajax({
+                    url: FILE_DELETE_URL,
+                    type: "GET",
+                    data: {fid: $(this).attr('fid')},
+                    success: function (res) {
+                        if (res.status){
+                            location.href = location.href;
+                        }
+                    }
+                })
+            })
+        }
 
         function initAddModel() {
             $('#addModal').on('show.bs.modal', function (event) {
@@ -146,9 +180,14 @@
                     modal.find('.error-msg').empty();
                     $('#folderForm')[0].reset();
                 }
-
-
             })
+            $('#deleteModal').on('show.bs.modal', function (event) {
+                let button = $(event.relatedTarget); // Button that triggered the modal
+                let fid = button.data('fid'); // Extract info from data-* attributes
+                let modal = $(this);
+                modal.find('#btnDelete').attr("fid", fid);
+            })
+
         }
 
         function bindModelSubmit() {
