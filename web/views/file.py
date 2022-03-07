@@ -97,7 +97,23 @@ def file_delete(request, project_id):
         return JsonResponse({"status": True})
 
 
+@csrf_exempt
 def cos_credential(request, project_id):
+    file_list = json.loads(request.body.decode('utf-8'))
+    total_size = 0
+    per_file_limit = request.tracker.price_policy.per_file_size * 1024 * 1024
+    project_space_limit = request.tracker.price_policy.project_space * 1024 * 1024 * 1024
+    for item in file_list:
+        if item['size'] > per_file_limit:
+            msg = "单文件超出限制(最大{}M，文件：{})".format(request.tracker.price_policy.per_file_size, item["name"])
+            return JsonResponse({"status": False, "error": msg})
+        else:
+            total_size += item["size"]
+
+    use_space = request.tracker.project.use_space
+    if use_space + total_size > project_space_limit:
+        return JsonResponse({"status": False, "error": "容量超过限制，请升级套餐"})
+
     """ 获取cos上传临时凭证 """
     data_dict = cos.credential(request.tracker.project.bucket)
-    return JsonResponse(data_dict)
+    return JsonResponse({"status": True, "data": data_dict})
