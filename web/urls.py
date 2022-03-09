@@ -26,6 +26,7 @@ urlpatterns = [
         path('statistics/', manage.statistics, name='statistics'),
         path('file/', file.file, name='file'),
         path('file/delete/', file.file_delete, name='file_delete'),
+        path('file/post/', file.file_post, name='file_post'),
         path('cos/credential/', file.cos_credential, name='cos_credential'),
 
         path('wiki/', wiki.wiki, name='wiki'),

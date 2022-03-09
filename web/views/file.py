@@ -36,7 +36,8 @@ def file(request, project_id):
         context = {
             "form": form,
             "file_obj_list": file_obj_list,
-            "breadcrumb_list": breadcrumb_list
+            "breadcrumb_list": breadcrumb_list,
+            "folder_object": parent_object,
         }
         return render(request, "file.html", context)
     if request.method == "POST":
@@ -117,3 +118,11 @@ def cos_credential(request, project_id):
     """ 获取cos上传临时凭证 """
     data_dict = cos.credential(request.tracker.project.bucket)
     return JsonResponse({"status": True, "data": data_dict})
+
+
+@csrf_exempt
+def file_post(request, project_id):
+    """将上传成功的文件写入数据库"""
+    print(request.POST)
+    # 根据key去COS中获取文件的eTag和前端传递的eTag比较
+    return JsonResponse({})

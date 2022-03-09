@@ -198,6 +198,8 @@
 
         let FILE_DELETE_URL = "{% url 'file_delete' project_id=request.tracker.project.id %}"
         let COS_CREDENTIAL = "{% url 'cos_credential' project_id=request.tracker.project.id %}"
+        let FILE_POST = "{% url 'file_post' project_id=request.tracker.project.id %}"
+        let CURRENT_FOLDER_ID = "{{ folder_object.id }}"
 
         $(function () {
             initAddModel();
@@ -208,62 +210,80 @@
 
         function bindUploadFile() {
             $('#uploadFile').change(function () {
-                $('#progressList').empty(); // 清空进度条
-                let fileList = $(this)[0].files;
-                // 获取本次上传的每个文件的名称和大小
-                let checkFileList = [];
-                $.each(fileList, function (index, fileObject) {
-                    let fileName = fileObject.name;
-                    let fileSize = fileObject.size;
-                    checkFileList.push({'name': fileName, 'size': fileSize})
-                })
+                    $('#progressList').empty(); // 清空进度条
+                    let fileList = $(this)[0].files;
+                    // 获取本次上传的每个文件的名称和大小
+                    let checkFileList = [];
+                    $.each(fileList, function (index, fileObject) {
+                        let fileName = fileObject.name;
+                        let fileSize = fileObject.size;
+                        checkFileList.push({'name': fileName, 'size': fileSize})
+                    })
 
-                // 将这些数据发送到Django后台，Django后台进行容量校验，如果通过则返回临时凭证
-                let cos_credential = new COS({
-                    getAuthorization: function (options, callback) {
-                        $.post(COS_CREDENTIAL, JSON.stringify(checkFileList), function (res) {
-                            if (res.status) {
-                                let data = res.data
-                                let credentials = data && data.credentials;
-                                if (!data || !credentials) {
-                                    return console.error('credentials invalid')
+                    // 将这些数据发送到Django后台，Django后台进行容量校验，如果通过则返回临时凭证
+                    let cos_credential = new COS({
+                        getAuthorization: function (options, callback) {
+                            $.post(COS_CREDENTIAL, JSON.stringify(checkFileList), function (res) {
+                                if (res.status) {
+                                    let data = res.data
+                                    let credentials = data && data.credentials;
+                                    if (!data || !credentials) {
+                                        return console.error('credentials invalid')
+                                    }
+                                    callback({
+                                        TmpSecretId: credentials.tmpSecretId,
+                                        TmpSecretKey: credentials.tmpSecretKey,
+                                        XCosSecurityToken: credentials.sessionToken,
+                                        StartTime: data.startTime, // 时间戳，单位秒，如：1580000000，建议返回服务器时间作为签名的开始时间，避免用户浏览器本地时间偏差过大导致签名错误
+                                        ExpiredTime: data.expiredTime, // 时间戳，单位秒，如：1580000900
+                                    });
+                                    $('#uploadProgress').removeClass('hide');
+                                } else {
+                                    alert(res.error)
                                 }
-                                callback({
-                                    TmpSecretId: credentials.tmpSecretId,
-                                    TmpSecretKey: credentials.tmpSecretKey,
-                                    XCosSecurityToken: credentials.sessionToken,
-                                    StartTime: data.startTime, // 时间戳，单位秒，如：1580000000，建议返回服务器时间作为签名的开始时间，避免用户浏览器本地时间偏差过大导致签名错误
-                                    ExpiredTime: data.expiredTime, // 时间戳，单位秒，如：1580000900
-                                });
-                                $('#uploadProgress').removeClass('hide');
-                            } else {
-                                alert(res.error)
-                            }
-                        })
-                    }
-                })
-                $.each(fileList, function (index, fileObject) {
-                    let fileName = fileObject.name;
-                    let tr = $('#progressTemplate').find('tr').clone();
-                    tr.find('.name').text(fileName);
-                    $('#progressList').append(tr);
-                    // 上传文件（异步）
-                    cos_credential.putObject({
-                        Bucket: "{{ request.tracker.project.bucket }}",
-                        Region: "ap-beijing",
-                        Key: fileName,
-                        Body: fileObject,
-                        onProgress: function (processData) {
-                            let pData = processData;
-                            let percent = pData.percent * 100 + '%';
-                            tr.find('.progress-bar').text(percent);
-                            tr.find('.progress-bar').css('width', percent);
-                        }, function(err, data) {
-                            console.log(err || data);
+                            })
                         }
                     })
-                })
-            })
+                    $.each(fileList, function (index, fileObject) {
+                        let fileName = fileObject.name;
+                        let fileSize = fileObject.size;
+                        let key = (new Date()).getTime() + "_" + fileName;
+                        let tr = $('#progressTemplate').find('tr').clone();
+                        tr.find('.name').text(fileName);
+                        $('#progressList').append(tr);
+                        // 上传文件（异步）
+                        cos_credential.putObject({
+                            Bucket: "{{ request.tracker.project.bucket }}",
+                            Region: "ap-beijing",
+                            Key: key,
+                            Body: fileObject,
+                            onProgress: function (processData) {
+                                let percent = processData.percent * 100 + '%';
+                                tr.find('.progress-bar').text(percent);
+                                tr.find('.progress-bar').css('width', percent);
+                            }
+                        }, function (err, data) {
+                            console.log(err || data);
+                            if (data && data.statusCode === 200) {
+                                // 上传成功，将本次上传的文件提交到后台
+                                $.post(FILE_POST, {
+                                        name: fileName,
+                                        key: key,
+                                        file_size: fileSize,
+                                        parent: CURRENT_FOLDER_ID,
+                                        eTag: data.eTag,
+                                        file_path: data.Location,
+                                    },
+                                    function (res) {
+
+                                    })
+                            } else {
+                                tr.find('.progress-error').text('上传失败')
+                            }
+                        })
+                    })
+                }
+            )
         }
 
         function bindDeleteSubmit() {
