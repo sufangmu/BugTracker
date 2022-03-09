@@ -29,6 +29,17 @@
             left: -2px;
             overflow: hidden;
         }
+
+        .upload-progress {
+            position: fixed;
+            right: 2px;
+            bottom: 2px;
+            width: 400px;
+        }
+
+        .upload-progress .progress-error {
+            color: red;
+        }
     </style>
 {% endblock %}
 {% block content %}
@@ -154,6 +165,31 @@
             </div>
         </div>
     </div>
+    <div id="uploadProgress" class="upload-progress hide">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <i class="fa fa-cloud-upload" aria-hidden="true"> 上传进度</i>
+            </div>
+            <table class="table">
+                <tbody id="progressList">
+                </tbody>
+            </table>
+        </div>
+        <div class="hide">
+            <table id="progressTemplate">
+                <tr>
+                    <td>
+                        <div class="name"></div>
+                        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0"
+                             aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                            0%
+                        </div>
+                        <div class="progress-error"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
 {% endblock %}
 
 {% block js %}
@@ -172,6 +208,7 @@
 
         function bindUploadFile() {
             $('#uploadFile').change(function () {
+                $('#progressList').empty(); // 清空进度条
                 let fileList = $(this)[0].files;
                 // 获取本次上传的每个文件的名称和大小
                 let checkFileList = [];
@@ -198,7 +235,7 @@
                                     StartTime: data.startTime, // 时间戳，单位秒，如：1580000000，建议返回服务器时间作为签名的开始时间，避免用户浏览器本地时间偏差过大导致签名错误
                                     ExpiredTime: data.expiredTime, // 时间戳，单位秒，如：1580000900
                                 });
-
+                                $('#uploadProgress').removeClass('hide');
                             } else {
                                 alert(res.error)
                             }
@@ -207,6 +244,9 @@
                 })
                 $.each(fileList, function (index, fileObject) {
                     let fileName = fileObject.name;
+                    let tr = $('#progressTemplate').find('tr').clone();
+                    tr.find('.name').text(fileName);
+                    $('#progressList').append(tr);
                     // 上传文件（异步）
                     cos_credential.putObject({
                         Bucket: "{{ request.tracker.project.bucket }}",
@@ -214,7 +254,10 @@
                         Key: fileName,
                         Body: fileObject,
                         onProgress: function (processData) {
-                            console.log("文件上传进度-->", fileName, JSON.stringify(processData));
+                            let pData = processData;
+                            let percent = pData.percent * 100 + '%';
+                            tr.find('.progress-bar').text(percent);
+                            tr.find('.progress-bar').css('width', percent);
                         }, function(err, data) {
                             console.log(err || data);
                         }
