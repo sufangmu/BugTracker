@@ -135,6 +135,10 @@ def file_post(request, project_id):
                           "file_type": 1,
                           "update_user": request.tracker.user})
         instance = models.FileRepository.objects.create(**data_dict)
+
+        # 更新项目的已使用空间
+        request.tracker.project.use_space += data_dict["file_size"]
+        request.tracker.project.save()
         res = {
             "id": instance.id,
             "name": instance.name,

@@ -102,7 +102,7 @@ class FileRepository(models.Model):
     file_type = models.SmallIntegerField(verbose_name="类型", choices=file_type_choices)
     name = models.CharField(verbose_name="名称", max_length=128, help_text="文件/目录名")
     key = models.CharField(verbose_name="存在在COS中KEY", max_length=128, null=True, blank=True)
-    file_size = models.IntegerField(verbose_name="文件大小", null=True, blank=True)
+    file_size = models.BigIntegerField(verbose_name="文件大小", null=True, blank=True, help_text="字节")
     file_path = models.CharField(verbose_name="文件路径", max_length=255, null=True, blank=True)
     parent = models.ForeignKey(verbose_name="父目录", to="self", related_name="children", blank=True, null=True,
                                on_delete=models.CASCADE)
