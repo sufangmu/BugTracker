@@ -68,6 +68,14 @@ def delete_files(bucket, file_list):
     )
 
 
+def check_file(bucket, key):
+    response = client.head_object(
+        Bucket=bucket,
+        Key=key,
+    )
+    return response
+
+
 def credential(bucket):
     """ 获取cos上传临时凭证 """
 

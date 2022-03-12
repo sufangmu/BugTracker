@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from web.forms.file import FolderModelForm
+from web.forms.file import FolderModelForm, FileModelForm
 from web import models
 from web.utils.tencent import cos
 
@@ -124,5 +124,8 @@ def cos_credential(request, project_id):
 def file_post(request, project_id):
     """将上传成功的文件写入数据库"""
     print(request.POST)
+    form = FileModelForm(request, data=request.POST)
+    if form.is_valid():
+        pass
     # 根据key去COS中获取文件的eTag和前端传递的eTag比较
     return JsonResponse({})
