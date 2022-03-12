@@ -95,7 +95,7 @@ def file_delete(request, project_id):
                 request.tracker.project.use_space -= total_size
                 request.tracker.project.save()
         delete_obj.delete()
-        return JsonResponse({"status": True})
+    return JsonResponse({"status": True})
 
 
 @csrf_exempt
@@ -123,9 +123,25 @@ def cos_credential(request, project_id):
 @csrf_exempt
 def file_post(request, project_id):
     """将上传成功的文件写入数据库"""
-    print(request.POST)
     form = FileModelForm(request, data=request.POST)
     if form.is_valid():
-        pass
+        # 校验通过写入数据库
+        form.instance.file_type = 1
+        form.update_user = request.tracker.user
+        # 通过form.save()存储到数据库中的数据返回的instance对象，无法通过get_xxx_display获取choice的值
+        data_dict = form.cleaned_data
+        data_dict.pop('etag')
+        data_dict.update({"project": request.tracker.project,
+                          "file_type": 1,
+                          "update_user": request.tracker.user})
+        instance = models.FileRepository.objects.create(**data_dict)
+        res = {
+            "id": instance.id,
+            "name": instance.name,
+            "file_size": instance.file_size,
+            "username": instance.update_user.username,
+            "datetime": instance.update_datetime.strftime("%Y-%m-%d %H:%M:%S"),
+        }
+        return JsonResponse({"status": True, "data": res})
     # 根据key去COS中获取文件的eTag和前端传递的eTag比较
-    return JsonResponse({})
+    return JsonResponse({"status": False, "data": "文件d上传错误"})

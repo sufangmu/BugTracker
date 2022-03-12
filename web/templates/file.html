@@ -82,7 +82,7 @@
                     <th>操作</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="rowList">
                 {% for item in file_obj_list %}
                     <tr>
                         <td>
@@ -190,14 +190,31 @@
             </table>
         </div>
     </div>
-
+    <div class="hide">
+        <table id="rowTemplate">
+            <tr>
+                <td>
+                    <i class="fa fa-file" aria-hidden="true"></i>
+                    <span class="name"></span>
+                </td>
+                <td class="file_size"></td>
+                <td class="username"></td>
+                <td class="datetime"></td>
+                <td>
+                    <a class="btn btn-danger btn-xs delete" data-toggle="modal" data-target="#alertModal">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </a>
+                </td>
+            </tr>
+        </table>
+    </div>
     <div class="modal fade " tabindex="-1" role="dialog" id="uploadError" aria-labelledby="uploadError"
          data-dismiss="alert">
         <div class="modal-dialog modal-sm" role="document">
             <div class="modal-content">
                 <div class="panel panel-warning">
                     <div class="panel-heading">
-                        <h3 class="panel-title text-center" >上传失败</h3>
+                        <h3 class="panel-title text-center">上传失败</h3>
                     </div>
                     <div class="panel-body">
                         <span></span>
@@ -293,7 +310,17 @@
                                         file_path: data.Location,
                                     },
                                     function (res) {
+                                        // 数据库中写入成功，将已添加的数据在页面上动态展示。
+                                        let newRow = $('#rowTemplate').find('tr').clone();
+                                        newRow.find('.name').text(res.data.name);
+                                        newRow.find('.file_size').text(res.data.file_size);
+                                        newRow.find('.username').text(res.data.username);
+                                        newRow.find('.datetime').text(res.data.datetime);
+                                        newRow.find('.delete').attr('data-fid', res.data.id);
+                                        $('#rowList').append(newRow);
 
+                                        // 删除当前文件的上传进度条
+                                        tr.remove();
                                     })
                             } else {
                                 tr.find('.progress-error').text('上传失败')

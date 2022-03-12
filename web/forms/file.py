@@ -61,7 +61,7 @@ class FileModelForm(BootStrapForm, forms.ModelForm):
             return self.add_error(key, "文件上传失败")
             return self.cleaned_data
 
-        cos_etag = res.get("etag")
+        cos_etag = res.get("ETag")
         if etag != cos_etag:
             return self.add_error("etag", "etag错误")
 
