@@ -287,6 +287,7 @@
                             })
                         }
                     })
+                    let fileCount = 0;
                     $.each(fileList, function (index, fileObject) {
                         let fileName = fileObject.name;
                         let fileSize = fileObject.size;
@@ -305,8 +306,8 @@
                                 tr.find('.progress-bar').text(percent);
                                 tr.find('.progress-bar').css('width', percent);
                             }
+
                         }, function (err, data) {
-                            console.log(err || data);
                             if (data && data.statusCode === 200) {
                                 // 上传成功，将本次上传的文件提交到后台
                                 $.post(FILE_POST, {
@@ -331,10 +332,15 @@
                                         // 删除当前文件的上传进度条
                                         tr.remove();
                                     })
+
                             } else {
                                 tr.find('.progress-error').text('上传失败')
                             }
+                            if (++fileCount === fileList.length) {
+                                $('#uploadProgress').addClass('hide')
+                            }
                         })
+
                     })
                 }
             )

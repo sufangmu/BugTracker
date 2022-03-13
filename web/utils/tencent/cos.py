@@ -5,6 +5,7 @@
 from qcloud_cos import CosConfig
 from qcloud_cos import CosS3Client
 from django.conf import settings
+from qcloud_cos.cos_exception import CosServiceError
 
 # 1. 设置用户属性, 包括 secret_id, secret_key, region等。Appid 已在CosConfig中移除，请在参数 Bucket 中带上 Appid。Bucket 由 BucketName-Appid 组成
 secret_id = settings.TENCENT_SECRET_ID  # 替换为用户的 SecretId，请登录访问管理控制台进行查看和管理，https://console.cloud.tencent.com/cam/capi
@@ -112,3 +113,37 @@ def credential(bucket):
     sts = Sts(_config)
     result_dict = sts.get_credential()
     return result_dict
+
+
+def delete_bucket(bucket):
+    """删除桶"""
+    # 1. 删除桶中的所有文件
+    try:
+        while True:
+            part_objects = client.list_objects(bucket)
+            contents = part_objects.get("Contents")
+            if not contents:
+                break
+            objects = {
+                "Quiet": "true",
+                "Object": [{"Key": item["Key"] for item in contents}]
+            }
+            client.delete_objects(Bucket=bucket,
+                                  Delete=objects,
+                                  )
+            if part_objects["IsTruncated"] == "false":
+                break
+        # 2. 删除桶中的碎片
+        while True:
+            part_uploads = client.list_multipart_uploads(bucket)
+            uploads = part_uploads.get("Upload")
+            if not uploads:
+                break
+            for item in uploads:
+                client.abort_multipart_upload(bucket, item["Key"], item["UploadId"])
+            if part_uploads["IsTruncated"] == "false":
+                break
+        # 3. 删除空桶
+        client.delete_bucket(bucket)
+    except CosServiceError:
+        pass

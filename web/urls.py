@@ -7,7 +7,6 @@ from web.views import manage
 from web.views import wiki
 from web.views import file
 from web.views import setting
-
 urlpatterns = [
     path('register/', account.register, name='register'),
     path('send_sms/', account.send_sms, name='send_sms'),
@@ -40,5 +39,6 @@ urlpatterns = [
 
         path('wiki/catalog/', wiki.wiki_catalog, name='wiki_catalog'),
         path('setting/', setting.setting, name='setting'),
+        path('setting/delete', setting.delete, name='setting_delete'),
     ], None)),
 ]
