@@ -1,4 +1,44 @@
 {% extends 'layout/manage.html' %}
 {% block content %}
+    <div class="container-fluid clearfix" style="padding: 20px 0;">
+        <div class="col-sm-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-search" aria-hidden="true">筛选</i>
+                </div>
+                <div class="panel-body">
+                    筛选项
+                </div>
+            </div>
+        </div>
 
+        <div class="col-sm-9">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-quora" aria-hidden="true"></i> 问题
+                </div>
+                <div class="panel-body">
+                    <a class="btn btn-success btn-sm">新建问题</a>
+                    <a class="btn btn-primary btn-sm">邀请成员</a>
+                </div>
+                <table class="table">
+                    <tbody class="issues_list">
+
+                    </tbody>
+                </table>
+            </div>
+            <nav aria-label="...">
+                <ul class="pagination">
+                    <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+                    <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><a href="#">5</a></li>
+                    <li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+                </ul>
+            </nav>
+        </div>
+
+    </div>
 {% endblock %}

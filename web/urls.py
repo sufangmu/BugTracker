@@ -7,6 +7,8 @@ from web.views import manage
 from web.views import wiki
 from web.views import file
 from web.views import setting
+from web.views import issues
+
 urlpatterns = [
     path('register/', account.register, name='register'),
     path('send_sms/', account.send_sms, name='send_sms'),
@@ -23,7 +25,6 @@ urlpatterns = [
     # 项目管理
     re_path(r'manage/(?P<project_id>\d+)/', include([
         path('dashboard/', manage.dashboard, name='dashboard'),
-        path('issue/', manage.issue, name='issue'),
         path('statistics/', manage.statistics, name='statistics'),
         path('file/', file.file, name='file'),
         path('file/delete/', file.file_delete, name='file_delete'),
@@ -36,9 +37,12 @@ urlpatterns = [
         re_path(r'wiki/delete/(?P<wiki_id>\d+)/', wiki.wiki_delete, name='wiki_delete'),
         re_path(r'wiki/edit/(?P<wiki_id>\d+)/', wiki.wiki_edit, name='wiki_edit'),
         re_path(r'wiki/upload/', wiki.wiki_upload, name='wiki_upload'),
-
         path('wiki/catalog/', wiki.wiki_catalog, name='wiki_catalog'),
+
         path('setting/', setting.setting, name='setting'),
         path('setting/delete', setting.delete, name='setting_delete'),
+
+        path('issue/', issues.issue, name='issue'),
+
     ], None)),
 ]
