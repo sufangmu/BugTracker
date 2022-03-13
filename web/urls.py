@@ -6,6 +6,7 @@ from web.views import project
 from web.views import manage
 from web.views import wiki
 from web.views import file
+from web.views import setting
 
 urlpatterns = [
     path('register/', account.register, name='register'),
@@ -38,7 +39,6 @@ urlpatterns = [
         re_path(r'wiki/upload/', wiki.wiki_upload, name='wiki_upload'),
 
         path('wiki/catalog/', wiki.wiki_catalog, name='wiki_catalog'),
-        path('setting/', manage.setting, name='setting'),
+        path('setting/', setting.setting, name='setting'),
     ], None)),
-
 ]
