@@ -4,7 +4,7 @@
         <div class="col-sm-3">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-search" aria-hidden="true">筛选</i>
+                    <i class="fa fa-search" aria-hidden="true"> 筛选</i>
                 </div>
                 <div class="panel-body">
                     筛选项
@@ -18,7 +18,7 @@
                     <i class="fa fa-quora" aria-hidden="true"></i> 问题
                 </div>
                 <div class="panel-body">
-                    <a class="btn btn-success btn-sm">新建问题</a>
+                    <a class="btn btn-success btn-sm" data-toggle="modal" data-target="#addModal">新建问题</a>
                     <a class="btn btn-primary btn-sm">邀请成员</a>
                 </div>
                 <table class="table">
@@ -40,5 +40,26 @@
             </nav>
         </div>
 
+    </div>
+
+
+    <div id="addModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">新建问题</h4>
+                </div>
+                <div class="modal-body" style="padding-right: 40px;">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                    <button type="button" class="btn btn-primary">添 加</button>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}
