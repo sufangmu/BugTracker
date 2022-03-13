@@ -6,6 +6,7 @@ from web.views import project
 from web.views import manage
 from web.views import wiki
 from web.views import file
+
 urlpatterns = [
     path('register/', account.register, name='register'),
     path('send_sms/', account.send_sms, name='send_sms'),
@@ -27,6 +28,7 @@ urlpatterns = [
         path('file/', file.file, name='file'),
         path('file/delete/', file.file_delete, name='file_delete'),
         path('file/post/', file.file_post, name='file_post'),
+        re_path(r'file/download/(?P<file_id>\d+)/$', file.file_download, name='file_download'),
         path('cos/credential/', file.cos_credential, name='cos_credential'),
 
         path('wiki/', wiki.wiki, name='wiki'),

@@ -1,10 +1,11 @@
 import json
-
+import requests
 from django.forms import model_to_dict
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-
+from django.urls import reverse
+from django.utils.encoding import escape_uri_path
 from web.forms.file import FolderModelForm, FileModelForm
 from web import models
 from web.utils.tencent import cos
@@ -145,7 +146,20 @@ def file_post(request, project_id):
             "file_size": instance.file_size,
             "username": instance.update_user.username,
             "datetime": instance.update_datetime.strftime("%Y-%m-%d %H:%M:%S"),
+            "download_url": reverse("file_download", kwargs={"project_id": project_id, "file_id": instance.id})
         }
         return JsonResponse({"status": True, "data": res})
     # 根据key去COS中获取文件的eTag和前端传递的eTag比较
     return JsonResponse({"status": False, "data": "文件d上传错误"})
+
+
+def file_download(request, project_id, file_id):
+    """下载文件"""
+    file_obj = models.FileRepository.objects.filter(id=file_id, project_id=project_id).first()
+    file_path = file_obj.file_path
+    data = requests.get(file_path).iter_content()  # 大文件分块下载
+    response = HttpResponse(data, content_type="application/octet-stream")  # 下载提示框
+    # 设置响应头
+    # escape_uri_path: 中文名转义
+    response["content-Disposition"] = "attachment; filename={}".format(escape_uri_path(file_obj.name))
+    return response

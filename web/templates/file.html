@@ -111,6 +111,11 @@
                                    data-whatever="编辑文件夹" data-name="{{ item.name }}" data-fid="{{ item.id }}">
                                     <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                 </a>
+                            {% else %}
+                                <a class="btn btn-default btn-xs"
+                                   href="{% url 'file_download' project_id=request.tracker.project.id file_id=item.id %}">
+                                    <i class="fa fa-cloud-download" aria-hidden="true"></i>
+                                </a>
                             {% endif %}
                             <a class="btn btn-danger btn-xs" data-toggle="modal" data-target="#deleteModal"
                                data-fid="{{ item.id }}">
@@ -201,6 +206,9 @@
                 <td class="username"></td>
                 <td class="datetime"></td>
                 <td>
+                    <a class="btn btn-default btn-xs download">
+                        <i class="fa fa-cloud-download" aria-hidden="true"></i>
+                    </a>
                     <a class="btn btn-danger btn-xs delete" data-toggle="modal" data-target="#alertModal">
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </a>
@@ -317,6 +325,7 @@
                                         newRow.find('.username').text(res.data.username);
                                         newRow.find('.datetime').text(res.data.datetime);
                                         newRow.find('.delete').attr('data-fid', res.data.id);
+                                        newRow.find('.download').attr('href', res.data.download_url);
                                         $('#rowList').append(newRow);
 
                                         // 删除当前文件的上传进度条
