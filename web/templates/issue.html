@@ -1,4 +1,17 @@
 {% extends 'layout/manage.html' %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'plugin/editor.md/css/editormd.min.css' %}">
+    <style>
+        .editormd {
+            margin-bottom: 0;
+        }
+
+        .pd-0 {
+            padding: 0 !important;
+        }
+    </style>
+{% endblock %}
 {% block content %}
     <div class="container-fluid clearfix" style="padding: 20px 0;">
         <div class="col-sm-3">
@@ -54,15 +67,142 @@
                 </div>
                 <div class="modal-body" style="padding-right: 40px;">
                     <form id="addForm" class="form-horizontal">
-                        {% for field in form %}
-                            <div class="form-group">
-                                <label for="{{ field.id_for_label }}" class="col-sm-2 control-label">{{ field.label }}</label>
-                                <div class="col-sm-10">
-                                    {{ field }}
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="{{ form.issues_type.id_for_label }}"
+                                   class="col-sm-2 control-label">{{ form.issues_type.label }}</label>
+                            <div class="col-sm-10">
+                                {{ form.issues_type }}
+                                <span class="error-msg"></span>
+                            </div>
+                            <span class="error-msg"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.subject.id_for_label }}"
+                                   class="col-sm-2 control-label">{{ form.subject.label }}</label>
+                            <div class="col-sm-10">
+                                {{ form.subject }}
+                                <span class="error-msg"></span>
+                            </div>
+                            <span class="error-msg"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.module.id_for_label }}"
+                                   class="col-sm-2 control-label">{{ form.module.label }}</label>
+                            <div class="col-sm-10">
+                                {{ form.module }}
+                                <span class="error-msg"></span>
+                            </div>
+                            <span class="error-msg"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.desc.id_for_label }}"
+                                   class="col-sm-2 control-label">{{ form.desc.label }}</label>
+                            <div class="col-sm-10">
+                                <div id="editor">
+                                    {{ form.desc }}
+                                </div>
+                                <span class="error-msg"></span>
+                            </div>
+                            <span class="error-msg"></span>
+                        </div>
+                        <div class="form-group clearfix">
+
+                            <div class="col-md-6 pd-0">
+                                <label for="{{ form.status.id_for_label }}"
+                                       class="col-md-4 control-label">{{ form.status.label }}</label>
+                                <div class="col-md-8 clearfix">
+                                    <div>
+                                        {{ form.status }}
+                                    </div>
+                                    <div class="error-msg"></div>
+
+                                </div>
+                            </div>
+                            <div class="col-md-6 pd-0">
+                                <label for=" {{ form.priority.id_for_label }}"
+                                       class="col-md-4 control-label">{{ form.priority.label }}</label>
+                                <div class="col-md-8">
+                                    <div>
+                                        {{ form.priority }}
+                                    </div>
+                                    <div class="error-msg"></div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group clearfix">
+                            <div class="col-md-6 pd-0">
+                                <label class="col-md-4 control-label">指派给</label>
+                                <div class="col-md-8">
+                                    {{ form.assign }}
+                                    <div class="error-msg"></div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 pd-0">
+                                <label class="col-md-4 control-label">关注者</label>
+                                <div class="col-md-8">
+
+                                    {{ form.attention }}
+
+                                    <div class="error-msg"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group clearfix">
+                            <div class="col-md-6 pd-0">
+                                <label class="col-md-4 control-label">开始时间</label>
+                                <div class="col-md-8">
+
+                                    <div class="input-group">
+                                        <span class="input-group-addon" id="sizing-addon2">
+                                            <i class="fa fa-calendar" aria-hidden="true"></i>
+                                        </span>
+                                        {{ form.start_date }}
+                                    </div>
+                                    <span class="error-msg"></span>
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 pd-0">
+                                <label class="col-md-4 control-label">截止时间</label>
+                                <div class="col-md-8">
+
+                                    <div class="input-group">
+                                        <span class="input-group-addon" id="sizing-addon2">
+                                            <i class="fa fa-calendar" aria-hidden="true"></i>
+                                        </span>
+                                        {{ form.end_date }}
+                                    </div>
                                     <span class="error-msg"></span>
                                 </div>
                             </div>
-                        {% endfor %}
+                        </div>
+                        <div class="form-group clearfix">
+                            <div class="col-md-6 pd-0">
+                                <label class="col-md-4 control-label">模式</label>
+                                <div class="col-md-8">
+                                    <div>
+                                        {{ form.mode }}
+                                    </div>
+                                    <div class="error-msg"></div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 pd-0">
+                                <label class="col-md-4 control-label"> 父问题</label>
+                                <div class="col-md-8">
+
+                                    {{ form.parent }}
+
+                                    <div class="error-msg"></div>
+                                </div>
+                            </div>
+                        </div>
 
                     </form>
                 </div>
@@ -73,4 +213,41 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'plugin/editor.md/editormd.min.js' %}"></script>
+
+    <script>
+        let WIKI_UPLOAD_URL = "{% url 'wiki_upload' project_id=request.tracker.project.id %}"
+        $(function () {
+            bindBootStrapShownEvent();
+        });
+
+        function bindBootStrapShownEvent() {
+            $('#addModal').on('shown.bs.modal', function (event) {
+                // 对话框弹出时触发
+                initEditorMd();
+
+            })
+        }
+
+        function initEditorMd() {
+            editormd("editor", {
+                placeholder: "在此输入内容",
+                height: 300,
+                path: "{% static 'plugin/editor.md/lib/' %}",
+                imageUpload: true,
+                imageFormats: ["jpg", "jpeg", "png", "gif"],
+                imageUploadURL: WIKI_UPLOAD_URL,
+                watch: false,
+                toolbarIcons : function () {
+                    // 禁用全屏显示
+                    return editormd.toolbarModes['full'].filter(function (item) {
+                        return item != "fullscreen";
+                    })
+                },
+            })
+        }
+    </script>
 {% endblock %}

@@ -8,6 +8,9 @@ class UserInfo(models.Model):
     mobile_phone = models.CharField(verbose_name='手机号', max_length=11)
     password = models.CharField(verbose_name='密码', max_length=32)
 
+    def __str__(self):
+        return self.username
+
 
 class PricePolicy(models.Model):
     """价格策略"""
