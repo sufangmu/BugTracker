@@ -3,5 +3,5 @@ from web.forms.issues import IssuesForm
 
 
 def issue(request, project_id):
-    form = IssuesForm()
+    form = IssuesForm(request)
     return render(request, 'issue.html', {"form": form})
