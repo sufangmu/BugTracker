@@ -51,8 +51,13 @@ def project_list(request):
             form.instance.bucket = bucket
             # Project中creator是必须要有的字段，此处需要添加上
             form.instance.creator = request.tracker.user
-            form.save()
-            # 由于是ajax请求，所以返回json字符串
+            instance = form.save()
+            # 创建项目时初始化Issue中的问题类型
+            issue_type_obj_list = []
+            for item in models.IssueType.ISSUE_TYPE_INIT_LIST:
+                issue_type_obj_list.append(models.IssueType(project=instance, title=item))
+                # 由于是ajax请求，所以返回json字符串
+            models.IssueType.objects.bulk_create(issue_type_obj_list)
             return JsonResponse({"status": True})
         return JsonResponse({"status": False, "error": form.errors})
 
