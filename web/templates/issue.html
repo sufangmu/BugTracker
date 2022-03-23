@@ -74,7 +74,9 @@
                             <label for="{{ form.issues_type.id_for_label }}"
                                    class="col-sm-2 control-label">{{ form.issues_type.label }}</label>
                             <div class="col-sm-10">
-                                {{ form.issues_type }}
+                                <div>
+                                    {{ form.issues_type }}
+                                </div>
                                 <span class="error-msg"></span>
                             </div>
                             <span class="error-msg"></span>
@@ -83,7 +85,9 @@
                             <label for="{{ form.subject.id_for_label }}"
                                    class="col-sm-2 control-label">{{ form.subject.label }}</label>
                             <div class="col-sm-10">
-                                {{ form.subject }}
+                                <div>
+                                    {{ form.subject }}
+                                </div>
                                 <span class="error-msg"></span>
                             </div>
                             <span class="error-msg"></span>
@@ -92,7 +96,9 @@
                             <label for="{{ form.module.id_for_label }}"
                                    class="col-sm-2 control-label">{{ form.module.label }}</label>
                             <div class="col-sm-10">
-                                {{ form.module }}
+                                <div>
+                                    {{ form.module }}
+                                </div>
                                 <span class="error-msg"></span>
                             </div>
                             <span class="error-msg"></span>
@@ -109,7 +115,6 @@
                             <span class="error-msg"></span>
                         </div>
                         <div class="form-group clearfix">
-
                             <div class="col-md-6 pd-0">
                                 <label for="{{ form.status.id_for_label }}"
                                        class="col-md-4 control-label">{{ form.status.label }}</label>
@@ -118,7 +123,6 @@
                                         {{ form.status }}
                                     </div>
                                     <div class="error-msg"></div>
-
                                 </div>
                             </div>
                             <div class="col-md-6 pd-0">
@@ -129,11 +133,9 @@
                                         {{ form.priority }}
                                     </div>
                                     <div class="error-msg"></div>
-
                                 </div>
                             </div>
                         </div>
-
                         <div class="form-group clearfix">
                             <div class="col-md-6 pd-0">
                                 <label class="col-md-4 control-label">指派给</label>
@@ -142,23 +144,18 @@
                                     <div class="error-msg"></div>
                                 </div>
                             </div>
-
                             <div class="col-md-6 pd-0">
                                 <label class="col-md-4 control-label">关注者</label>
                                 <div class="col-md-8">
-
                                     {{ form.attention }}
-
                                     <div class="error-msg"></div>
                                 </div>
                             </div>
                         </div>
-
                         <div class="form-group clearfix">
                             <div class="col-md-6 pd-0">
                                 <label class="col-md-4 control-label">开始时间</label>
                                 <div class="col-md-8">
-
                                     <div class="input-group">
                                         <span class="input-group-addon" id="sizing-addon2">
                                             <i class="fa fa-calendar" aria-hidden="true"></i>
@@ -166,14 +163,11 @@
                                         {{ form.start_date }}
                                     </div>
                                     <span class="error-msg"></span>
-
                                 </div>
                             </div>
-
                             <div class="col-md-6 pd-0">
                                 <label class="col-md-4 control-label">截止时间</label>
                                 <div class="col-md-8">
-
                                     <div class="input-group">
                                         <span class="input-group-addon" id="sizing-addon2">
                                             <i class="fa fa-calendar" aria-hidden="true"></i>
@@ -194,23 +188,19 @@
                                     <div class="error-msg"></div>
                                 </div>
                             </div>
-
                             <div class="col-md-6 pd-0">
                                 <label class="col-md-4 control-label"> 父问题</label>
                                 <div class="col-md-8">
-
                                     {{ form.parent }}
-
                                     <div class="error-msg"></div>
                                 </div>
                             </div>
                         </div>
-
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
-                    <button type="button" class="btn btn-primary">添 加</button>
+                    <button type="button" class="btn btn-primary" id="btnAddSubmit">添 加</button>
                 </div>
             </div>
         </div>
@@ -225,11 +215,35 @@
     <script src="{% static 'plugin/bootstrap-select/js/i18n/defaults-zh_CN.min.js' %}"></script>
     <script>
         let WIKI_UPLOAD_URL = "{% url 'wiki_upload' project_id=request.tracker.project.id %}"
+        let ISSUE_POST_URL = "{% url 'issue' project_id=request.tracker.project.id %}"
         $(function () {
             bindBootStrapShownEvent();
             initDatePicker();
+            bindAddSubmit();
         });
-        
+
+        function bindAddSubmit() {
+            $('#btnAddSubmit').click(function () {
+                $('#addForm').find('.error-msg').empty();
+                $.ajax({
+                    url: ISSUE_POST_URL,
+                    type: "POST",
+                    data: $('#addForm').serialize(),
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            location.href = location.href;
+                        } else {
+                            // 错误信息
+                            $.each(res.error, function (key, value) {
+                                $('#id_' + key).parent().next('.error-msg').text(value[0])
+                            })
+                        }
+                    }
+                })
+            })
+        }
+
         function initDatePicker() {
             $('#id_start_date,#id_end_date').datepicker({
                 format: 'yyyy-mm-dd',
@@ -238,6 +252,7 @@
                 autoclose: true,
             });
         }
+
         function bindBootStrapShownEvent() {
             $('#addModal').on('shown.bs.modal', function (event) {
                 // 对话框弹出时触发
@@ -255,7 +270,7 @@
                 imageFormats: ["jpg", "jpeg", "png", "gif"],
                 imageUploadURL: WIKI_UPLOAD_URL,
                 watch: false,
-                toolbarIcons : function () {
+                toolbarIcons: function () {
                     // 禁用全屏显示
                     return editormd.toolbarModes['full'].filter(function (item) {
                         return item != "fullscreen";
