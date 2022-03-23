@@ -1,10 +1,38 @@
 {% extends 'layout/manage.html' %}
 {% load static %}
+{% load issues %}
 {% block css %}
     <link rel="stylesheet" href="{% static 'plugin/editor.md/css/editormd.min.css' %}">
     <link rel="stylesheet" href="{% static 'plugin/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}">
     <link rel="stylesheet" href="{% static 'plugin/bootstrap-select/css/bootstrap-select.min.css' %}">
     <style>
+        .issues-list .number {
+            width: 100px;
+            text-align: right;
+        }
+
+        .issues-list .number a {
+            font-weight: 500;
+            padding: 0 10px;
+        }
+
+        .issues-list .issue .tags {
+            padding: 10px 0;
+        }
+
+        .issues-list .issue .tags span {
+            margin-right: 20px;
+            display: inline-block;
+            font-size: 12px;
+        }
+
+        .issues-list .issue .tags .type {
+            color: white;
+            padding: 1px 5px;
+            border-radius: 5px;
+            background-color: #dddddd;
+        }
+
         .editormd {
             margin-bottom: 0;
         }
@@ -37,7 +65,49 @@
                     <a class="btn btn-primary btn-sm">邀请成员</a>
                 </div>
                 <table class="table">
-                    <tbody class="issues_list">
+                    <tbody class="issues-list">
+                    {% for issue in issues %}
+                        <tr>
+                            <td class="number">
+                                <i class="fa fa-circle text-{{ issue.priority }}"></i>
+                                <a href="" target="_blank">{% string_zfill issue.id %}</a>
+                            </td>
+                            <td class="issue">
+                                <div>
+                                    <a href="" target="_blank">{{ issue.subject }}</a>
+                                </div>
+                                <div class="tags">
+                                    <span class="type">
+                                        {{ issue.issues_type.title }}
+                                    </span>
+                                    <span>
+                                        <i class="fa fa-refresh" aria-hidden="true"></i>
+                                        {{ issue.get_status_display }}
+                                    </span>
+                                    {% if issue.assign %}
+                                        <span>
+                                            <i class="fa fa-hand-o-right" aria-hidden="true"></i>
+                                            {{ issue.assign.username }}
+                                        </span>
+                                    {% endif %}
+                                    <span>
+                                        <i class="fa fa-user-o" aria-hidden="true"></i>
+                                        {{ issue.creator.username }}
+                                    </span>
+                                    {% if issue.end_date %}
+                                        <span>
+                                            <i class="fa fa-calendar" aria-hidden="true"></i>
+                                            {{ issue.end_date }} 截止
+                                        </span>
+                                    {% endif %}
+                                    <span>
+                                        <i class="fa fa-clock-o" aria-hidden="true"></i>
+                                        {{ issue.latest_update_datetime }} 更新
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
 
                     </tbody>
                 </table>
