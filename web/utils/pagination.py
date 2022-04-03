@@ -128,7 +128,7 @@ class Pagination(object):
         page_list.append(nex)
 
         if self.all_count:
-            tpl = "<li class='disabled'><a>共%s条数据</a></li>" % (
+            tpl = "<li class='disabled'><a>共%s条数据，页码%s/%s页</a></li>" % (
             self.all_count, self.current_page, self.pager_count,)
             page_list.append(tpl)
         page_str = "".join(page_list)

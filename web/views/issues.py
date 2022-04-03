@@ -29,3 +29,9 @@ def issue(request, project_id):
             form.save()
             return JsonResponse({"status": True})
         return JsonResponse({"status": False, "error": form.errors})
+
+
+def issue_detail(request, project_id, issue_id):
+    """编辑问题"""
+    form = IssuesForm(request)
+    return render(request, 'issue_detail.html', {"form": form})
