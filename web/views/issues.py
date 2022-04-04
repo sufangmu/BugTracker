@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from web.forms.issues import IssuesForm
+from web.forms.issues import IssuesForm, IssuesReplyModelForm
 from django.http import JsonResponse
 from web import models
 from web.utils.pagination import Pagination
@@ -40,17 +40,35 @@ def issue_detail(request, project_id, issue_id):
 
 def issue_replies(request, project_id, issue_id):
     """初始化问题评论"""
-    reply_list = models.Issuereply.objects.filter(issues_id=issue_id, issues__project=request.tracker.project)
-    # 格式化queryset为JSON
-    data_list = []
-    for row in reply_list:
-        data = {
-            "id": row.id,
-            "reply_type_text": row.get_reply_type_display(),
-            "content": row.content,
-            "creator": row.creator.username,
-            "datetime": row.create_datetime.strftime("%Y-%m-%d %H:%M:%S"),
-            "parent_id": row.reply_id,
-        }
-        data_list.append(data)
-    return JsonResponse({"status": True, "data": data_list})
+    if request.method == "GET":
+        reply_list = models.IssueReply.objects.filter(issues_id=issue_id, issues__project=request.tracker.project)
+        # 格式化queryset为JSON
+        data_list = []
+        for row in reply_list:
+            data = {
+                "id": row.id,
+                "reply_type_text": row.get_reply_type_display(),
+                "content": row.content,
+                "creator": row.creator.username,
+                "datetime": row.create_datetime.strftime("%Y-%m-%d %H:%M:%S"),
+                "parent_id": row.reply_id,
+            }
+            data_list.append(data)
+        return JsonResponse({"status": True, "data": data_list})
+    if request.method == "POST":
+        form = IssuesReplyModelForm(data=request.POST)
+        if form.is_valid():
+            form.instance.issues_id = issue_id
+            form.instance.reply_type = 2
+            form.instance.creator = request.tracker.user
+            instance = form.save()
+            data = {
+                "id": instance.id,
+                "reply_type_text": instance.get_reply_type_display(),
+                "content": instance.content,
+                "creator": instance.creator.username,
+                "datetime": instance.create_datetime.strftime("%Y-%m-%d %H:%M:%S"),
+                "parent_id": instance.reply_id,
+            }
+            return JsonResponse({"status": True, "data": data})
+        return JsonResponse({"status": False, "error": form.errors})

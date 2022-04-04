@@ -45,3 +45,9 @@ class IssuesForm(BootStrapForm, forms.ModelForm):
             project=self.request.tracker.project).values_list("id", "subject")
         parent_subject_list.extend(parent_subject_obj_list)
         self.fields["parent"].choices = parent_subject_list
+
+
+class IssuesReplyModelForm(forms.ModelForm):
+    class Meta:
+        model = models.IssueReply
+        fields = ["content", "reply"]

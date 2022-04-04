@@ -184,7 +184,7 @@ class IssueType(models.Model):
         return self.title
 
 
-class Issuereply(models.Model):
+class IssueReply(models.Model):
     """问题回复"""
 
     reply_type_choices = (

@@ -269,6 +269,7 @@
             initIssueReplay();
             bindReply();
             bindCancelReply();
+            bindSubmit();
         });
 
         function initEditorMd() {
@@ -361,6 +362,31 @@
         function bindCancelReply() {
             $('#replyUser').click(function () {
                 $(this).addClass('hide').removeAttr('parent-id').children('span').text("");
+            })
+        }
+
+        function bindSubmit() {
+            $('#btnSubmit').click(function () {
+                $("#commentText .error-msg").empty();
+                $.ajax({
+                    url: ISSUE_REPLIES_URL,
+                    type: "POST",
+                    data: {content: $('#content').val(), reply: $('#replyUser').attr('parent-id')},
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            // 添加节点
+                            createReplyNode(res.data);
+                            // 输入的内容清空
+                            $('#content').val('');
+                            $('#replyUser').addClass('hide').removeAttr('parent-id').children('span').text("");
+                        } else {
+                            $.each(res.error, function (k, v) {
+                                $('#content').next('.error-msg').text(v[0]);
+                            })
+                        }
+                    }
+                })
             })
         }
     </script>
