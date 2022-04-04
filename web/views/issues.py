@@ -33,5 +33,6 @@ def issue(request, project_id):
 
 def issue_detail(request, project_id, issue_id):
     """编辑问题"""
-    form = IssuesForm(request)
+    issue_obj = models.Issues.objects.filter(project_id=project_id, id=issue_id).first()
+    form = IssuesForm(request, instance=issue_obj)
     return render(request, 'issue_detail.html', {"form": form})

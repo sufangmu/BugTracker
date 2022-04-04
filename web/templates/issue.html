@@ -70,11 +70,11 @@
                         <tr>
                             <td class="number">
                                 <i class="fa fa-circle text-{{ issue.priority }}"></i>
-                                <a href="" target="_blank">{% string_zfill issue.id %}</a>
+                                <a href="{% url 'issue_detail' project_id=request.tracker.project.id issue_id=issue.id %}" target="_blank">{% string_zfill issue.id %}</a>
                             </td>
                             <td class="issue">
                                 <div>
-                                    <a href="" target="_blank">{{ issue.subject }}</a>
+                                    <a href="{% url 'issue_detail' project_id=request.tracker.project.id issue_id=issue.id %}" target="_blank">{{ issue.subject }}</a>
                                 </div>
                                 <div class="tags">
                                     <span class="type">
@@ -337,7 +337,7 @@
                 toolbarIcons: function () {
                     // 禁用全屏显示
                     return editormd.toolbarModes['full'].filter(function (item) {
-                        return item != "fullscreen";
+                        return item != "fullscreen" && item != "info" && item != "help";
                     })
                 },
             })
