@@ -115,5 +115,45 @@ def issue_change(request, project_id, issue_id):
             change_msg = "{}更新为空{}".format(field_obj.verbose_name, value)
 
         return JsonResponse({"status": True, "data": create_reply_msg(change_msg)})
+    # 外键字段更新, 如果是指派要判断是否是创建者或者是参与者
+    if name in ["issues_type", "module", "parent", "assign"]:
+        # 用户选择为空
+        if not value:
+            if not field_obj.null:
+                return JsonResponse({"status": False, "error": "该字段不能为空"})
+            # 允许为空
+            setattr(issue_obj, name, None)
+            issue_obj.save()
+            change_msg = "{}更新为空".format(field_obj.verbose_name)
+        # 用户输入不为空
+        else:
+            if name == "assign":
+                # 判断是否是创建者
+                if value == str(request.tracker.project.creator_id):
+                    instance = request.tracker.project.creator
+                else:
+                    project_user_object = models.ProjectUser.objects.filter(project_id=project_id,
+                                                                            user_id=value).first()
+                    if project_user_object:
+                        instance = project_user_object.user
+                    else:
+                        instance = None
+                if not instance:
+                    return JsonResponse({"status": False, "error": "选择的值不存在"})
+                setattr(issue_obj, name, instance)
+                issue_obj.save()
+                change_msg = "{}更新为{}".format(field_obj.verbose_name, str(instance))
+                return JsonResponse({"status": True, "data": create_reply_msg(change_msg)})
+
+                # 是否是项目参与者
+            else:
+                # 条件判断： 用户输入的值时自己的值
+                instance = field_obj.remote_field.model.objects.filter(id=value, project_id=project_id).first()
+                if not instance:
+                    return JsonResponse({"status": False, "error": "选择的值不存在"})
+                setattr(issue_obj, name, instance)
+                issue_obj.save()
+                change_msg = "{}更新为{}".format(field_obj.verbose_name, str(instance))
+                return JsonResponse({"status": True, "data": create_reply_msg(change_msg)})
 
     return JsonResponse({})
