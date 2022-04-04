@@ -175,7 +175,6 @@ class Module(models.Model):
 
 
 class IssueType(models.Model):
-
     ISSUE_TYPE_INIT_LIST = ["任务", "功能", "Bug"]
 
     title = models.CharField(verbose_name="类型名称", max_length=32)
@@ -183,3 +182,18 @@ class IssueType(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class IssueReplay(models.Model):
+    """问题回复"""
+
+    replay_type_choices = (
+        (1, "修改记录"),
+        (2, "回复"),
+    )
+    replay_type = models.IntegerField(verbose_name="类型", choices=replay_type_choices)
+    issues = models.ForeignKey(verbose_name="问题", to="Issues", on_delete=models.CASCADE)
+    content = models.TextField(verbose_name="描述")
+    creator = models.ForeignKey(verbose_name="创建者", to="UserInfo", related_name="create_reploy", on_delete=models.DO_NOTHING)
+    create_datetime = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
+    replay = models.ForeignKey(verbose_name="回复", to="self", null=True, blank=True, on_delete=models.CASCADE)
