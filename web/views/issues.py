@@ -35,12 +35,12 @@ def issue_detail(request, project_id, issue_id):
     """编辑问题"""
     issue_obj = models.Issues.objects.filter(project_id=project_id, id=issue_id).first()
     form = IssuesForm(request, instance=issue_obj)
-    return render(request, 'issue_detail.html', {"form": form})
+    return render(request, 'issue_detail.html', {"form": form, "issue_obj": issue_obj})
 
 
 def issue_replies(request, project_id, issue_id):
     """初始化问题评论"""
-    reply_list = models.Issuereply.objects.filter(issue_id=issue_id, issues__project=request.tracker.project)
+    reply_list = models.Issuereply.objects.filter(issues_id=issue_id, issues__project=request.tracker.project)
     # 格式化queryset为JSON
     data_list = []
     for row in reply_list:

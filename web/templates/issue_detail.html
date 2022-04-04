@@ -4,6 +4,52 @@
     <link rel="stylesheet" href="{% static 'plugin/editor.md/css/editormd.min.css' %}">
     <link rel="stylesheet" href="{% static 'plugin/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}">
     <link rel="stylesheet" href="{% static 'plugin/bootstrap-select/css/bootstrap-select.min.css' %}">
+    <style>
+        .comment-area .item {
+            margin-top: 20px;
+        }
+
+        .comment-area .left-avatar {
+            float: left;
+            margin-right: 10px;
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: #304659;
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            border-radius: 50%;
+        }
+
+        .comment-area .right-info {
+            padding-left: 35px;
+        }
+
+        .comment-area .right-info .desc .msg {
+            display: inline-block;
+            padding-right: 20px;
+            color: #8c8c8c;
+        }
+
+        .comment-area .child {
+            padding-left: 55px;
+        }
+
+        .comment-area .error-msg {
+            color: red;
+        }
+
+        .comment-area .reply-user {
+            display: inline-block;
+            background-color: #ddd;
+            color: black;
+            padding: 6px 8px;
+            margin-left: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
 {% endblock %}
 {% block content %}
     <div class="container-fluid clearfix" style="padding: 20px 0;">
@@ -154,8 +200,11 @@
                     <i class="fa fa-search" aria-hidden="true"></i> 操作记录
                 </div>
                 <div class="panel-body comment-area">
-                    <div class="comment-text" id="commentText">
+                    <div class="comment-list">
 
+                    </div>
+                    <hr>
+                    <div class="comment-text" id="commentText">
                         <div class="form-group">
                             <textarea id="content" rows="6" class="form-control" placeholder="请输入要回复的内容"></textarea>
                             <span class="error-msg"></span>
@@ -168,6 +217,36 @@
 
     </div>
 
+    <div class="hide" id="repliesTemplate">
+        <div class="item clearfix">
+            <div class="left-avatar"></div>
+            <div class="right-info">
+                <pre></pre>
+                <div class="desc">
+                    <div class="msg">
+                        <i class="fa fa-bullhorn" aria-hidden="true"></i>
+                        <span class="type"></span>
+                    </div>
+                    <div class="msg">
+                        <i class="fa fa-user-o" aria-hidden="true"></i>
+                        <span class="user"></span>
+                    </div>
+                    <div class="msg">
+                        <i class="fa fa-clock-o" aria-hidden="true"></i>
+                        <span class="date"></span>
+                    </div>
+
+                    <a href="#commentText" class="reply">
+                        <i class="fa fa-commenting-o" aria-hidden="true"></i> 回复
+                    </a>
+
+                </div>
+            </div>
+            <div class="child">
+
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block js %}
@@ -235,12 +314,32 @@
                 dataType: "JSON",
                 success: function (res) {
                     if (res.status) {
-
+                        $.each(res.data, function (index, item) {
+                            createReplyNode(item);
+                        })
                     } else {
                         console.log(res)
                     }
                 }
             })
+        }
+
+        function createReplyNode(nodeDict) {
+            let $item = $("#repliesTemplate").find('.item').clone();
+            $item.find('.left-avatar').html(nodeDict.creator[0].toUpperCase());
+            $item.find('pre').html(nodeDict.content);
+            $item.find('.user').html(nodeDict.creator);
+            $item.find('.type').html(nodeDict.reply_type_text);
+            $item.find('.date').html(nodeDict.datetime);
+            $item.attr({id: nodeDict.id, username: nodeDict.creator});
+
+            if (nodeDict.parent_id) {
+                // 挂在谁下
+                $('#' + nodeDict.parent_id).children('.child').append($item);
+            } else {
+                // 根下
+                $('.comment-list').append($item);
+            }
         }
     </script>
 
