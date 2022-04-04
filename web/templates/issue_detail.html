@@ -62,51 +62,59 @@
 
                 </div>
                 <div class="panel-body">
-                    <form id="addForm" class="form-horizontal">
+                    <form id="editForm" class="form-horizontal">
                         {% csrf_token %}
                         <div class="form-group">
                             <label for="{{ form.issues_type.id_for_label }}"
-                                   class="col-sm-2 control-label">{{ form.issues_type.label }}</label>
-                            <div class="col-sm-10">
+                                   class="col-md-2 control-label">{{ form.issues_type.label }}</label>
+                            <div class="col-md-10">
                                 <div>
-                                    {{ form.issues_type }}
+                                    <div>
+                                        {{ form.issues_type }}
+                                    </div>
+                                    <div class="error-msg"></div>
                                 </div>
-                                <span class="error-msg"></span>
+                                <div class="error-msg"></div>
                             </div>
-                            <span class="error-msg"></span>
                         </div>
                         <div class="form-group">
                             <label for="{{ form.subject.id_for_label }}"
-                                   class="col-sm-2 control-label">{{ form.subject.label }}</label>
-                            <div class="col-sm-10">
+                                   class="col-md-2 control-label">{{ form.subject.label }}</label>
+                            <div class="col-md-10">
                                 <div>
-                                    {{ form.subject }}
+                                    <div>
+                                        <div>
+                                            {{ form.subject }}
+                                        </div>
+                                        <div class="error-msg"></div>
+                                    </div>
                                 </div>
-                                <span class="error-msg"></span>
+                                <div class="error-msg"></div>
                             </div>
-                            <span class="error-msg"></span>
                         </div>
                         <div class="form-group">
                             <label for="{{ form.module.id_for_label }}"
-                                   class="col-sm-2 control-label">{{ form.module.label }}</label>
-                            <div class="col-sm-10">
+                                   class="col-md-2 control-label">{{ form.module.label }}</label>
+                            <div class="col-md-10">
                                 <div>
-                                    {{ form.module }}
+                                    <div>
+                                        {{ form.module }}
+                                    </div>
+                                    <div class="error-msg"></div>
                                 </div>
-                                <span class="error-msg"></span>
+                                <div class="error-msg"></div>
                             </div>
-                            <span class="error-msg"></span>
                         </div>
                         <div class="form-group">
                             <label for="{{ form.desc.id_for_label }}"
-                                   class="col-sm-2 control-label">{{ form.desc.label }}</label>
-                            <div class="col-sm-10">
+                                   class="col-md-2 control-label">{{ form.desc.label }}</label>
+                            <div class="col-md-10">
                                 <div id="editor">
                                     {{ form.desc }}
                                 </div>
-                                <span class="error-msg"></span>
+                                <div class="error-msg"></div>
                             </div>
-                            <span class="error-msg"></span>
+                            <div class="error-msg"></div>
                         </div>
                         <div class="form-group clearfix">
                             <div class="col-md-6 pd-0">
@@ -185,7 +193,9 @@
                             <div class="col-md-6 pd-0">
                                 <label class="col-md-4 control-label"> 父问题</label>
                                 <div class="col-md-8">
-                                    {{ form.parent }}
+                                    <div>
+                                        {{ form.parent }}
+                                    </div>
                                     <div class="error-msg"></div>
                                 </div>
                             </div>
@@ -262,7 +272,9 @@
     <script>
         let WIKI_UPLOAD_URL = "{% url 'wiki_upload' project_id=request.tracker.project.id %}"
         let ISSUE_REPLIES_URL = "{% url 'issue_replies' project_id=request.tracker.project.id issue_id=issue_obj.id%}"
+        let ISSUE_CHANGE_URL = "{% url 'issue_change' project_id=request.tracker.project.id issue_id=issue_obj.id%}"
 
+        let EDITOR;
         $(function () {
             initDatePicker();
             initEditorMd();
@@ -270,10 +282,11 @@
             bindReply();
             bindCancelReply();
             bindSubmit();
+            bindChangeIssue();
         });
 
         function initEditorMd() {
-            editormd("editor", {
+            EDITOR = editormd("editor", {
                 placeholder: "在此输入内容",
                 height: 300,
                 path: "{% static 'plugin/editor.md/lib/' %}",
@@ -291,7 +304,6 @@
                         return item != "fullscreen" && item != "info" && item != "help";
                     })
                     toolbar.push("save")
-                    console.log(toolbar)
                     return toolbar
                 },
                 toolbarCustomIcons: {
@@ -310,7 +322,8 @@
         }
 
         function saveDesc() {
-            alert("xxxx")
+            let postDict = {name: 'desc', value: EDITOR.getValue()};
+            postAjaxData(postDict);
         }
 
         // 问题评论的初始化
@@ -387,6 +400,29 @@
                         }
                     }
                 })
+            })
+        }
+
+        function bindChangeIssue() {
+            $('#editForm').find('.form-control').change(function () {
+                // 内容变更
+                let postDict = {name: $(this).attr('name'), value: $(this).val()};
+                postAjaxData(postDict);
+            });
+        }
+
+        function postAjaxData(postDict) {
+            $.ajax({
+                header: {
+                    "Content-Type": "application/json;charset=utf-8"
+                },
+                url: ISSUE_CHANGE_URL,
+                type: "POST",
+                dataType: "JSON",
+                data: JSON.stringify(postDict),
+                success: function (res) {
+                    console.log('xxxx')
+                }
             })
         }
     </script>

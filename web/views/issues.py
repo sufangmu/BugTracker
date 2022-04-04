@@ -72,3 +72,9 @@ def issue_replies(request, project_id, issue_id):
             }
             return JsonResponse({"status": True, "data": data})
         return JsonResponse({"status": False, "error": form.errors})
+
+
+def issue_change(request, project_id, issue_id):
+    data = request.body.decode('utf-8')
+    print(data)
+    return JsonResponse({})
