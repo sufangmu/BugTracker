@@ -178,10 +178,12 @@
     <script src="{% static 'plugin/bootstrap-select/js/i18n/defaults-zh_CN.min.js' %}"></script>
     <script>
         let WIKI_UPLOAD_URL = "{% url 'wiki_upload' project_id=request.tracker.project.id %}"
+        let ISSUE_REPLIES_URL = "{% url 'issue_replies' project_id=request.tracker.project.id issue_id=issue_obj.id%}"
 
         $(function () {
             initDatePicker();
             initEditorMd();
+            initIssueReplay();
         });
 
         function initEditorMd() {
@@ -223,6 +225,22 @@
 
         function saveDesc() {
             alert("xxxx")
+        }
+
+        // 问题评论的初始化
+        function initIssueReplay() {
+            $.ajax({
+                url: ISSUE_REPLIES_URL,
+                type: "GET",
+                dataType: "JSON",
+                success: function (res) {
+                    if (res.status) {
+
+                    } else {
+                        console.log(res)
+                    }
+                }
+            })
         }
     </script>
 

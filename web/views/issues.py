@@ -36,3 +36,21 @@ def issue_detail(request, project_id, issue_id):
     issue_obj = models.Issues.objects.filter(project_id=project_id, id=issue_id).first()
     form = IssuesForm(request, instance=issue_obj)
     return render(request, 'issue_detail.html', {"form": form})
+
+
+def issue_replies(request, project_id, issue_id):
+    """初始化问题评论"""
+    reply_list = models.Issuereply.objects.filter(issue_id=issue_id, issues__project=request.tracker.project)
+    # 格式化queryset为JSON
+    data_list = []
+    for row in reply_list:
+        data = {
+            "id": row.id,
+            "reply_type_text": row.get_reply_type_display(),
+            "content": row.content,
+            "creator": row.creator.username,
+            "datetime": row.create_datetime.strftime("%Y-%m-%d %H:%M:%S"),
+            "parent_id": row.reply_id,
+        }
+        data_list.append(data)
+    return JsonResponse({"status": True, "data": data_list})
