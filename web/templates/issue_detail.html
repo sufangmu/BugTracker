@@ -210,6 +210,10 @@
                             <span class="error-msg"></span>
                         </div>
                         <input class="btn btn-primary" type="button" id="btnSubmit" value="提 交">
+                        <div class="reply-user hide" id="replyUser">
+                            回复 <span></span>
+                            <i class="fa fa-times-circle" aria-hidden="true" style="color: #9d9d9d;"></i>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -263,6 +267,8 @@
             initDatePicker();
             initEditorMd();
             initIssueReplay();
+            bindReply();
+            bindCancelReply();
         });
 
         function initEditorMd() {
@@ -340,6 +346,22 @@
                 // 根下
                 $('.comment-list').append($item);
             }
+        }
+
+
+        function bindReply() {
+            $('.comment-list').on('click', '.reply', function () {
+                let $item = $(this).parent().parent().parent();
+                let id = $item.attr('id');
+                let username = $item.attr('username');
+                $('#replyUser').removeClass('hide').attr('parent-id', id).children('span').text(username);
+            })
+        }
+
+        function bindCancelReply() {
+            $('#replyUser').click(function () {
+                $(this).addClass('hide').removeAttr('parent-id').children('span').text("");
+            })
         }
     </script>
 
