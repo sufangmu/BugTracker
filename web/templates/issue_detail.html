@@ -194,7 +194,10 @@
                                 <label class="col-md-4 control-label"> 父问题</label>
                                 <div class="col-md-8">
                                     <div>
-                                        {{ form.parent }}
+                                        <span>
+                                            {{ form.parent }}
+                                        </span>
+
                                     </div>
                                     <div class="error-msg"></div>
                                 </div>
@@ -406,12 +409,16 @@
         function bindChangeIssue() {
             $('#editForm').find('.form-control').change(function () {
                 // 内容变更
-                let postDict = {name: $(this).attr('name'), value: $(this).val()};
-                postAjaxData(postDict);
+                // TODO: 有多于的 多选框{"value":""}，未找到原因
+                if ($(this).attr('name')) {
+                    let postDict = {name: $(this).attr('name'), value: $(this).val()};
+                    postAjaxData(postDict);
+                }
             });
         }
 
         function postAjaxData(postDict) {
+            $('#id_' + postDict.name).parent().next('.error-msg').text("");
             $.ajax({
                 header: {
                     "Content-Type": "application/json;charset=utf-8"
@@ -421,10 +428,13 @@
                 dataType: "JSON",
                 data: JSON.stringify(postDict),
                 success: function (res) {
-                    console.log('xxxx')
+                    if (res.status) {
+                        createReplyNode(res.data);
+                    } else {
+                        $('#id_' + postDict.name).parent().next('.error-msg').text(res.error);
+                    }
                 }
             })
         }
     </script>
-
 {% endblock %}

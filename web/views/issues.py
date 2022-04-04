@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render
 from web.forms.issues import IssuesForm, IssuesReplyModelForm
 from django.http import JsonResponse
@@ -75,6 +77,43 @@ def issue_replies(request, project_id, issue_id):
 
 
 def issue_change(request, project_id, issue_id):
-    data = request.body.decode('utf-8')
-    print(data)
+    issue_obj = models.Issues.objects.filter(id=issue_id, project_id=project_id).first()
+    data = json.loads(request.body.decode('utf-8'))
+    name = data.get('name')
+    value = data.get('value')
+
+    field_obj = models.Issues._meta.get_field(name)
+
+    def create_reply_msg(change_msg):
+        reply_obj = models.IssueReply.objects.create(
+            reply_type=1,
+            issues=issue_obj,
+            content=change_msg,
+            creator=request.tracker.user,
+        )
+        reply_data = {
+            "id": reply_obj.id,
+            "reply_type_text": reply_obj.get_reply_type_display(),
+            "content": reply_obj.content,
+            "creator": reply_obj.creator.username,
+            "datetime": reply_obj.create_datetime.strftime("%Y-%m-%d %H:%M:%S"),
+            "parent_id": reply_obj.reply_id,
+        }
+        return reply_data
+
+    # 文本类型字段的更新
+    if name in ["subject", "desc", "start_date", "end_date"]:
+        if not value:
+            if not field_obj.null:  # 数据库中不允许为空
+                return JsonResponse({"status": False, "error": "该字段不能为空"})
+            setattr(issue_obj, name, None)
+            issue_obj.save()
+            change_msg = "{}更新为空".format(field_obj.verbose_name)
+        else:
+            setattr(issue_obj, name, value)
+            issue_obj.save()
+            change_msg = "{}更新为空{}".format(field_obj.verbose_name, value)
+
+        return JsonResponse({"status": True, "data": create_reply_msg(change_msg)})
+
     return JsonResponse({})
