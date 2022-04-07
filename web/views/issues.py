@@ -8,8 +8,17 @@ from web.utils.pagination import Pagination
 
 
 def issue(request, project_id):
+    # 筛选
+    allow_filter_name = ["issues_type", "status", "priority"]
+    condition = {}
+    for name in allow_filter_name:
+        value_list = request.GET.getlist(name)
+        if not value_list:
+            continue
+        condition["{}__in".format(name)] = value_list
+
     if request.method == "GET":
-        queryset = models.Issues.objects.filter(project_id=project_id)
+        queryset = models.Issues.objects.filter(project_id=project_id).filter(**condition)
         page_obj = Pagination(
             current_page=request.GET.get('page'),
             all_count=queryset.count(),
