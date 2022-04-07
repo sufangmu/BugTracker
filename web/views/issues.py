@@ -112,7 +112,7 @@ def issue_change(request, project_id, issue_id):
         else:
             setattr(issue_obj, name, value)
             issue_obj.save()
-            change_msg = "{}更新为空{}".format(field_obj.verbose_name, value)
+            change_msg = "{}更新为{}".format(field_obj.verbose_name, value)
 
         return JsonResponse({"status": True, "data": create_reply_msg(change_msg)})
     # 外键字段更新, 如果是指派要判断是否是创建者或者是参与者
@@ -155,5 +155,17 @@ def issue_change(request, project_id, issue_id):
                 issue_obj.save()
                 change_msg = "{}更新为{}".format(field_obj.verbose_name, str(instance))
                 return JsonResponse({"status": True, "data": create_reply_msg(change_msg)})
+
+    if name in ["priority", "status", "mode"]:
+        selected_text = None
+        for key, text in field_obj.choices:
+            if str(key) == value:
+                selected_text = text
+        if not selected_text:
+            return JsonResponse({"status": False, "error": "选择的值不存在"})
+        setattr(issue_obj, name, value)
+        issue_obj.save()
+        change_msg = "{}更新为{}".format(field_obj.verbose_name, selected_text)
+        return JsonResponse({"status": True, "data": create_reply_msg(change_msg)})
 
     return JsonResponse({})
