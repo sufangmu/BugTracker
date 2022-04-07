@@ -155,7 +155,7 @@ def issue_change(request, project_id, issue_id):
                 issue_obj.save()
                 change_msg = "{}更新为{}".format(field_obj.verbose_name, str(instance))
                 return JsonResponse({"status": True, "data": create_reply_msg(change_msg)})
-
+    # choices字段更新
     if name in ["priority", "status", "mode"]:
         selected_text = None
         for key, text in field_obj.choices:
@@ -167,5 +167,31 @@ def issue_change(request, project_id, issue_id):
         issue_obj.save()
         change_msg = "{}更新为{}".format(field_obj.verbose_name, selected_text)
         return JsonResponse({"status": True, "data": create_reply_msg(change_msg)})
+    # manytomany字段更新
+    if name in ["attention"]:
+        if not isinstance(value, list):
+            return JsonResponse({"status": False, "error": "数据格式错误"})
+        if not value:
+            # 关注列表为空
+            issue_obj.attention.set(value)
+            issue_obj.save()
+            change_msg = "{}更新为空".format(field_obj.verbose_name)
+        else:
+            # 判断列关注者是否是项目成员
+            user_dict = {str(request.tracker.project.creator_id): request.tracker.project.creator.username}
+            project_user_list = models.ProjectUser.objects.filter(project_id=project_id)  # 获取当前项目所有的成员
+            for item in project_user_list:
+                user_dict[str(item.user_id)] = item.user.username
+            username_list = []
+            for user_id in value:
+                username = user_dict.get(str(user_id))
+                if not username:
+                    return JsonResponse({"status": False, "error": "数据错误或用户不存在"})
+                username_list.append(username)
+            # 更新数据库
+            issue_obj.attention.set(value)
+            issue_obj.save()
+            change_msg = "{}更新为{}".format(field_obj.verbose_name, ",".join(username_list))
+        return JsonResponse({"status": True, "data": create_reply_msg(change_msg)})
 
-    return JsonResponse({})
+    return JsonResponse({"status": False, "error": "数据错误"})
