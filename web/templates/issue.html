@@ -325,7 +325,14 @@
             bindBootStrapShownEvent();
             initDatePicker();
             bindAddSubmit();
+            binClickCheckFilter();
         });
+
+        function binClickCheckFilter() {
+            $('.filter-area').find(':checkbox').click(function () {
+                location.href = $(this).parent().attr('href');
+            })
+        }
 
         function bindAddSubmit() {
             $('#btnAddSubmit').click(function () {
