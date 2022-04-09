@@ -1,10 +1,32 @@
 import json
 
 from django.shortcuts import render
+from django.utils.safestring import mark_safe
+
 from web.forms.issues import IssuesForm, IssuesReplyModelForm
 from django.http import JsonResponse
 from web import models
 from web.utils.pagination import Pagination
+
+
+class CheckFilter:
+    def __init__(self, name, data, request):
+        self.name = name
+        self.data = data
+        self.request = request
+
+    def __iter__(self):
+        for item in self.data:
+            key = str(item[0])
+            value = item[1]
+            checked = ""
+            # 如果当前用户请求的URL中status的值和当前循环key相等 checked = "checked"
+            value_list = self.request.GET.getlist(self.name)
+            if key in value_list:
+                checked = "checked"
+            html = '<a class="cell" href="#"><input type="checkbox" {checked} /><label>{value}</label></a>'.format(
+                value=value, checked=checked)
+            yield mark_safe(html)
 
 
 def issue(request, project_id):
@@ -30,15 +52,23 @@ def issue(request, project_id):
         issues_obj_list = queryset[page_obj.start:page_obj.end]
 
         return render(request, 'issue.html',
-                      {"form": form, "issues": issues_obj_list, "page_html": page_obj.page_html()})
-
+                      {
+                          "form": form,
+                          "issues": issues_obj_list,
+                          "page_html": page_obj.page_html(),
+                          "filter_list": [
+                              {"title": "状态", "filter": CheckFilter("status", models.Issues.status_choices, request)},
+                              {"title": "优先级",
+                               "filter": CheckFilter("priority", models.Issues.priority_choices, request)},
+                          ]
+                      })
     if request.method == "POST":
         form = IssuesForm(request, data=request.POST)
         if form.is_valid():
             form.instance.project = request.tracker.project
-            form.instance.creator = request.tracker.user
-            form.save()
-            return JsonResponse({"status": True})
+        form.instance.creator = request.tracker.user
+        form.save()
+        return JsonResponse({"status": True})
         return JsonResponse({"status": False, "error": form.errors})
 
 
@@ -93,11 +123,11 @@ def issue_change(request, project_id, issue_id):
 
     field_obj = models.Issues._meta.get_field(name)
 
-    def create_reply_msg(change_msg):
+    def create_reply_msg(msg):
         reply_obj = models.IssueReply.objects.create(
             reply_type=1,
             issues=issue_obj,
-            content=change_msg,
+            content=msg,
             creator=request.tracker.user,
         )
         reply_data = {
