@@ -31,7 +31,13 @@ class CheckFilter:
             query_dict = self.request.GET.copy()
             query_dict._mutable = True  # 允许修改
             query_dict.setlist(self.name, value_list)
-            url = "{}?{}".format(self.request.path_info, query_dict.urlencode())
+            if 'page' in query_dict:
+                query_dict.pop('page')  # 删除分页的过滤
+            param = query_dict.urlencode()
+            if param:
+                url = "{}?{}".format(self.request.path_info, param)
+            else:
+                url = "{}".format(self.request.path_info)
             html = '<a class="cell" href="{url}"><input type="checkbox" {checked} /><label>{value}</label></a>'.format(
                 value=value, checked=checked, url=url)
             yield mark_safe(html)
