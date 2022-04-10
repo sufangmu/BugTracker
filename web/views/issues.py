@@ -1,6 +1,6 @@
 import json
 import time
-
+import datetime
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -10,6 +10,7 @@ from django.http import JsonResponse
 from web import models
 from web.utils.pagination import Pagination
 from web.utils.encrypt import md5
+
 
 class CheckFilter:
     def __init__(self, name, data, request):
@@ -330,4 +331,38 @@ def invite_url(request, project_id):
 
 def invite_join(request, code):
     """邀请码"""
-    pass
+    invite_obj = models.ProjectInvite.objects.filter(code=code).first()
+    if not invite_obj:
+        return render(request, 'invite_join.html', {"error": "邀请码不存在"})
+    if invite_obj.project.creator == request.tracker.user:
+        return render(request, 'invite_join.html', {"error": "创建者无须再加入项目"})
+    exists = models.ProjectUser.objects.filter(project=invite_obj.project, user=request.tracker.user).exists()
+    if exists:
+        return render(request, 'invite_join.html', {"error": "已经加入项目"})
+
+    # 最多允许成员
+    max_number = request.tracker.price_policy.project_member
+    # 目前所有成员
+    current_number = models.ProjectUser.objects.filter(project=invite_obj.project).count()
+    current_number = current_number + 1
+    if current_number >= max_number:
+        return render(request, 'invite_join.html', {"error": "项目成员已达上限，请联系管理员"})
+
+    # 邀请码是否过期
+    current_datetime = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=+0)))
+
+    limit_datetime = invite_obj.create_datetime + datetime.timedelta(minutes=invite_obj.period)
+
+    if current_datetime > limit_datetime:
+        return render(request, 'invite_join.html', {"error": "邀请码已过期"})
+
+    # 数量限制
+    if invite_obj.count:
+        if invite_obj.used_count >= invite_obj.count:
+            return render(request, 'invite_join.html', {"error": "邀请码数量使用完"})
+        invite_obj.used_count += 1
+        invite_obj.save()
+
+    models.ProjectUser.objects.create(user=request.tracker.user, project=invite_obj.project)
+    return render(request, 'invite_join.html', {"project": invite_obj.project})
+
