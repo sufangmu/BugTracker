@@ -43,6 +43,27 @@ class CheckFilter:
             yield mark_safe(html)
 
 
+class SelectFilter:
+    def __init__(self, name, data, request):
+        self.name = name
+        self.data = data
+        self.request = request
+
+    def __iter__(self):
+        yield mark_safe("<select class='select2' multiple='multiple' style='width:100%;' >")
+        for item in self.data:
+            key = str(item[0])
+            value = item[1]
+
+            selected = ""
+            value_list = self.request.GET.getlist(self.name)
+            if key in value_list:
+                selected = "selected"
+            html = "<option {selected}>{value}</option>".format(selected=selected, value=value)
+            yield mark_safe(html)
+        yield mark_safe("</select>")
+
+
 def issue(request, project_id):
     # 筛选
     allow_filter_name = ["issues_type", "status", "priority"]
@@ -65,26 +86,29 @@ def issue(request, project_id):
         form = IssuesForm(request)
         issues_obj_list = queryset[page_obj.start:page_obj.end]
         issues_type = models.IssueType.objects.filter(project_id=project_id).values_list("id", "title")
-        print(issues_type)
+        project_total_user = [(request.tracker.project.creator_id, request.tracker.project.creator.username)]
+        project_join_user = models.ProjectUser.objects.filter(project_id=project_id).values_list('user_id', 'user__username')
+        project_total_user.extend(project_join_user)
         return render(request, 'issue.html',
                       {
                           "form": form,
                           "issues": issues_obj_list,
                           "page_html": page_obj.page_html(),
                           "filter_list": [
-                              {"title": "类型", "filter": CheckFilter("issue_type", issues_type, request)},
+                              {"title": "类型", "filter": CheckFilter("issues_type", issues_type, request)},
                               {"title": "状态", "filter": CheckFilter("status", models.Issues.status_choices, request)},
                               {"title": "优先级", "filter": CheckFilter("priority", models.Issues.priority_choices, request)},
+                              {"title": "指派者", "filter": SelectFilter("assign", project_total_user, request)},
                           ]
                       })
     if request.method == "POST":
         form = IssuesForm(request, data=request.POST)
         if form.is_valid():
             form.instance.project = request.tracker.project
-        form.instance.creator = request.tracker.user
-        form.save()
-        return JsonResponse({"status": True})
-    return JsonResponse({"status": False, "error": form.errors})
+            form.instance.creator = request.tracker.user
+            form.save()
+            return JsonResponse({"status": True})
+        return JsonResponse({"status": False, "error": form.errors})
 
 
 def issue_detail(request, project_id, issue_id):
