@@ -64,16 +64,17 @@ def issue(request, project_id):
         )
         form = IssuesForm(request)
         issues_obj_list = queryset[page_obj.start:page_obj.end]
-
+        issues_type = models.IssueType.objects.filter(project_id=project_id).values_list("id", "title")
+        print(issues_type)
         return render(request, 'issue.html',
                       {
                           "form": form,
                           "issues": issues_obj_list,
                           "page_html": page_obj.page_html(),
                           "filter_list": [
+                              {"title": "类型", "filter": CheckFilter("issue_type", issues_type, request)},
                               {"title": "状态", "filter": CheckFilter("status", models.Issues.status_choices, request)},
-                              {"title": "优先级",
-                               "filter": CheckFilter("priority", models.Issues.priority_choices, request)},
+                              {"title": "优先级", "filter": CheckFilter("priority", models.Issues.priority_choices, request)},
                           ]
                       })
     if request.method == "POST":
@@ -83,7 +84,7 @@ def issue(request, project_id):
         form.instance.creator = request.tracker.user
         form.save()
         return JsonResponse({"status": True})
-        return JsonResponse({"status": False, "error": form.errors})
+    return JsonResponse({"status": False, "error": form.errors})
 
 
 def issue_detail(request, project_id, issue_id):
