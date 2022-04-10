@@ -59,14 +59,30 @@ class SelectFilter:
             value_list = self.request.GET.getlist(self.name)
             if key in value_list:
                 selected = "selected"
-            html = "<option {selected}>{value}</option>".format(selected=selected, value=value)
+                value_list.remove(key)
+            else:
+                value_list.append(key)
+            # 生成URL：在原有基础上增加
+
+            query_dict = self.request.GET.copy()
+            query_dict._mutable = True  # 允许修改
+            query_dict.setlist(self.name, value_list)
+            if 'page' in query_dict:
+                query_dict.pop('page')  # 删除分页的过滤
+            param = query_dict.urlencode()
+            if param:
+                url = "{}?{}".format(self.request.path_info, param)
+            else:
+                url = "{}".format(self.request.path_info)
+
+            html = "<option value={url} {selected}>{value}</option>".format(selected=selected, value=value, url=url)
             yield mark_safe(html)
         yield mark_safe("</select>")
 
 
 def issue(request, project_id):
     # 筛选
-    allow_filter_name = ["issues_type", "status", "priority"]
+    allow_filter_name = ["issues_type", "status", "priority", "assign", "attention"]
     condition = {}
     for name in allow_filter_name:
         value_list = request.GET.getlist(name)
@@ -99,6 +115,7 @@ def issue(request, project_id):
                               {"title": "状态", "filter": CheckFilter("status", models.Issues.status_choices, request)},
                               {"title": "优先级", "filter": CheckFilter("priority", models.Issues.priority_choices, request)},
                               {"title": "指派者", "filter": SelectFilter("assign", project_total_user, request)},
+                              {"title": "关注者", "filter": SelectFilter("attention", project_total_user, request)},
                           ]
                       })
     if request.method == "POST":
