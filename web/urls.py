@@ -40,12 +40,13 @@ urlpatterns = [
         path('wiki/catalog/', wiki.wiki_catalog, name='wiki_catalog'),
 
         path('setting/', setting.setting, name='setting'),
-        path('setting/delete', setting.delete, name='setting_delete'),
+        path('setting/delete/', setting.delete, name='setting_delete'),
 
         path('issue/', issues.issue, name='issue'),
         re_path(r'issue/detail/(?P<issue_id>\d+)/', issues.issue_detail, name='issue_detail'),
         re_path(r'issue/replies/(?P<issue_id>\d+)/', issues.issue_replies, name='issue_replies'),
         re_path(r'issue/change/(?P<issue_id>\d+)/', issues.issue_change, name='issue_change'),
-
+        path('issue/invite/url/', issues.invite_url, name='invite_url'),
     ], None)),
+    re_path(r'invite/join/(?P<code>\w+)', issues.invite_join, name='invite_join'),
 ]

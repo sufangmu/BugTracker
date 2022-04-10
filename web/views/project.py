@@ -44,7 +44,7 @@ def project_list(request):
     if request.method == "POST":
         form = ProjectModelForm(request, data=request.POST)
         if form.is_valid():
-            # 为项目创建桶
+            # 为项目创建桶，同名中必须包含TENCENT_APP_ID
             bucket = "{}-{}-{}".format(request.tracker.user.mobile_phone, str(int(time.time())),
                                        settings.TENCENT_APP_ID)
             cos.create_bucket(bucket)

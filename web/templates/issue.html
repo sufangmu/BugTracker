@@ -365,14 +365,52 @@
     <script>
         let WIKI_UPLOAD_URL = "{% url 'wiki_upload' project_id=request.tracker.project.id %}"
         let ISSUE_POST_URL = "{% url 'issue' project_id=request.tracker.project.id %}"
-
+        let INVITE_URL = "{% url 'invite_url' project_id=request.tracker.project.id %}"
         $(function () {
             bindBootStrapShownEvent();
             initDatePicker();
             bindAddSubmit();
             binClickCheckFilter();
             initSelect2();
+            bindCreateInviteCode();
+            bindCopyUrl();
         });
+        /*
+        点击生成要请链接
+         */
+        function bindCreateInviteCode() {
+            $('#btnGenInviteCode').click(function () {
+                $('.error-msg').empty();
+                $.ajax({
+                    url: INVITE_URL,
+                    type: "POST",
+                    data: $('#inviteForm').serialize(),
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            $('#inviteArea').removeClass('hide').find('#inviteUrl').val(res.data);
+                        } else {
+                            $.each(res.error, function (k, v) {
+                                $('#id_' + k).next('.error-msg').text(v[0]);
+                            })
+                        }
+                    }
+                })
+            })
+        }
+
+/*
+        点击拷贝邀请码
+        */
+        function bindCopyUrl() {
+            $('#btnCopyUrl').click(function () {
+                let textInput = $('#inviteUrl')[0]; // document.getElementById('inviteUrl')
+                textInput.select();
+
+                document.execCommand("Copy");
+                console.log('复制成功');
+            })
+        }
 
         function initSelect2() {
             $('.select2').select2({}).on('select2:select', function (e) {

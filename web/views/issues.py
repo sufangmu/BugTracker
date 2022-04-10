@@ -1,13 +1,15 @@
 import json
+import time
 
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 from web.forms.issues import IssuesForm, IssuesReplyModelForm, InviteModelForm
 from django.http import JsonResponse
 from web import models
 from web.utils.pagination import Pagination
-
+from web.utils.encrypt import md5
 
 class CheckFilter:
     def __init__(self, name, data, request):
@@ -91,7 +93,6 @@ def issue(request, project_id):
         condition["{}__in".format(name)] = value_list
 
     if request.method == "GET":
-
         invite_form = InviteModelForm()
 
         queryset = models.Issues.objects.filter(project_id=project_id).filter(**condition)
@@ -106,7 +107,8 @@ def issue(request, project_id):
         issues_obj_list = queryset[page_obj.start:page_obj.end]
         issues_type = models.IssueType.objects.filter(project_id=project_id).values_list("id", "title")
         project_total_user = [(request.tracker.project.creator_id, request.tracker.project.creator.username)]
-        project_join_user = models.ProjectUser.objects.filter(project_id=project_id).values_list('user_id', 'user__username')
+        project_join_user = models.ProjectUser.objects.filter(project_id=project_id).values_list('user_id',
+                                                                                                 'user__username')
         project_total_user.extend(project_join_user)
         return render(request, 'issue.html',
                       {
@@ -117,7 +119,8 @@ def issue(request, project_id):
                           "filter_list": [
                               {"title": "类型", "filter": CheckFilter("issues_type", issues_type, request)},
                               {"title": "状态", "filter": CheckFilter("status", models.Issues.status_choices, request)},
-                              {"title": "优先级", "filter": CheckFilter("priority", models.Issues.priority_choices, request)},
+                              {"title": "优先级",
+                               "filter": CheckFilter("priority", models.Issues.priority_choices, request)},
                               {"title": "指派者", "filter": SelectFilter("assign", project_total_user, request)},
                               {"title": "关注者", "filter": SelectFilter("attention", project_total_user, request)},
                           ]
@@ -294,3 +297,37 @@ def issue_change(request, project_id, issue_id):
         return JsonResponse({"status": True, "data": create_reply_msg(change_msg)})
 
     return JsonResponse({"status": False, "error": "数据错误"})
+
+
+def invite_url(request, project_id):
+    form = InviteModelForm(data=request.POST)
+    if form.is_valid():
+        """
+        1.创建邀请码
+        2.保存到数据库
+        """
+        if request.tracker.user != request.tracker.project.creator:
+            form.add_error("period", "仅项目创建者可执行此操作")
+            return JsonResponse({"status": False, "error": form.errors})
+        random_invite_code = md5("{}-{}".format(request.tracker.project.name, time.time()))
+        form.instance.project = request.tracker.project
+        form.instance.code = random_invite_code
+        form.instance.creator = request.tracker.user
+        form.save()
+
+        # 将邀请码返回给前端
+        url_path = reverse('invite_join', kwargs={"code": random_invite_code})
+
+        url = "{scheme}://{host}{path}".format(
+            scheme=request.scheme,
+            host=request.get_host(),
+            path=url_path,
+        )
+        return JsonResponse({"status": True, "data": url})
+
+    return JsonResponse({"status": False, "error": form.errors})
+
+
+def invite_join(request, code):
+    """邀请码"""
+    pass
