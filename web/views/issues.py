@@ -3,7 +3,7 @@ import json
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
 
-from web.forms.issues import IssuesForm, IssuesReplyModelForm
+from web.forms.issues import IssuesForm, IssuesReplyModelForm, InviteModelForm
 from django.http import JsonResponse
 from web import models
 from web.utils.pagination import Pagination
@@ -91,6 +91,9 @@ def issue(request, project_id):
         condition["{}__in".format(name)] = value_list
 
     if request.method == "GET":
+
+        invite_form = InviteModelForm()
+
         queryset = models.Issues.objects.filter(project_id=project_id).filter(**condition)
         page_obj = Pagination(
             current_page=request.GET.get('page'),
@@ -108,6 +111,7 @@ def issue(request, project_id):
         return render(request, 'issue.html',
                       {
                           "form": form,
+                          "invite_form": invite_form,
                           "issues": issues_obj_list,
                           "page_html": page_obj.page_html(),
                           "filter_list": [
