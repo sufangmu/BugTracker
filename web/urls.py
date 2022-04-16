@@ -8,6 +8,7 @@ from web.views import wiki
 from web.views import file
 from web.views import setting
 from web.views import issues
+from web.views import dashboard
 
 urlpatterns = [
     path('register/', account.register, name='register'),
@@ -24,7 +25,7 @@ urlpatterns = [
             name='project_unstar'),
     # 项目管理
     re_path(r'manage/(?P<project_id>\d+)/', include([
-        path('dashboard/', manage.dashboard, name='dashboard'),
+        path('dashboard/', dashboard.dashboard, name='dashboard'),
         path('statistics/', manage.statistics, name='statistics'),
         path('file/', file.file, name='file'),
         path('file/delete/', file.file_delete, name='file_delete'),
