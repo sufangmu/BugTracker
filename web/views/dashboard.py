@@ -15,7 +15,11 @@ def dashboard(request, project_id):
     issues_data = models.Issues.objects.filter(project_id=project_id).values("status").annotate(count=Count("id"))
     for item in issues_data:
         status_dict[item["status"]]["count"] = item["count"]
+
+    # 项目成员
+    user_list = models.ProjectUser.objects.filter(project_id=project_id).values("user_id", "user__username")
     context = {
-        "status_dict": status_dict
+        "status_dict": status_dict,
+        "user_list": user_list,
     }
     return render(request, "dashboard.html", context)

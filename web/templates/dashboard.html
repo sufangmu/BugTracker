@@ -24,6 +24,27 @@
         .status-count a {
             text-decoration: none;
         }
+
+        .user-item .title {
+            margin-bottom: 20px;
+        }
+
+        .user-item .avatar, .top-10 .avatar {
+            float: left;
+            margin-right: 10px;
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: #304659;
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            border-radius: 50%;
+        }
+
+        .user-item .text {
+            line-height: 30px;
+        }
     </style>
 {% endblock %}
 {% block content %}
@@ -65,6 +86,22 @@
                             项目成员
                         </div>
                         <div class="panel-body user-item">
+                            <div class="col-sm-12 title">创建者</div>
+                            <div class="clearfix" style="margin-bottom: 30px;">
+                                <div class="col-sm-4">
+                                    <div class="avatar">{{ request.tracker.project.creator.username.0|upper }}</div>
+                                    <div class="text">{{ request.tracker.project.creator.username }}</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 title">参与者</div>
+                            <div>
+                                {% for item in user_list %}
+                                    <div class="col-sm-4">
+                                        <div class="avatar">{{ item.user__username.0|upper }}</div>
+                                        <div class="text">{{ item.user__username }}</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
