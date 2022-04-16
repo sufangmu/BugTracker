@@ -1,4 +1,16 @@
 {% extends 'layout/manage.html' %}
+{% load dashboard %}
+{% block css %}
+    <style>
+        .table-right > tbody > tr > td.label-left {
+            width: 90px;
+        }
+
+        .table-right > tbody > tr > td {
+            border: 0;
+        }
+    </style>
+{% endblock %}
 {% block content %}
     <div class="container-fluid" style="margin-top: 20px">
         <div class="col-md-8">
@@ -41,6 +53,28 @@
                     详细
                 </div>
                 <div class="panel-body">
+                    <table class="table table-right">
+                        <tbody>
+                        <tr>
+                            <td class="label-left">项目名称 ：</td>
+                            <td>{{ request.tracker.project.name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label-left">项目描述 ：</td>
+                            <td>{{ request.tracker.project.desc }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label-left">创建时间 ：</td>
+                            <td>{{ request.tracker.project.create_datetime }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label-left">项目空间 ：</td>
+                            <td> {%  used_space request.tracker.project.use_space %}
+                                / {{ request.tracker.price_policy.project_space }} GB
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
