@@ -349,7 +349,7 @@ def invite_join(request, code):
         return render(request, 'invite_join.html', {"error": "项目成员已达上限，请联系管理员"})
 
     # 邀请码是否过期
-    current_datetime = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=+0)))
+    current_datetime = datetime.datetime.now()
 
     limit_datetime = invite_obj.create_datetime + datetime.timedelta(minutes=invite_obj.period)
 
