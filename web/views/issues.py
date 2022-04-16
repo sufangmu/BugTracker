@@ -378,5 +378,7 @@ def invite_join(request, code):
         invite_obj.save()
 
     models.ProjectUser.objects.create(user=request.tracker.user, project=invite_obj.project)
+    invite_obj.project.join_count += 1
+    invite_obj.project.save()
     return render(request, 'invite_join.html', {"project": invite_obj.project})
 
