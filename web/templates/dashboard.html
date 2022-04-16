@@ -9,6 +9,21 @@
         .table-right > tbody > tr > td {
             border: 0;
         }
+
+        .status-count {
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .status-count .count {
+            font-size: 25px;
+        }
+
+        .status-count a {
+            text-decoration: none;
+        }
     </style>
 {% endblock %}
 {% block content %}
@@ -31,6 +46,15 @@
                             问题
                         </div>
                         <div class="panel-body">
+                            {% for key, item in status_dict.items %}
+                                <div class="col-sm-4 status-count">
+                                    <a href="{% url "issue" project_id=request.tracker.project.id %}?status={{ key }}">
+                                        <div class="count">{{ item.count }}</div>
+                                        <div>{{ item.text }}</div>
+                                    </a>
+                                </div>
+                            {% endfor %}
+
                         </div>
                     </div>
                 </div>
@@ -69,7 +93,7 @@
                         </tr>
                         <tr>
                             <td class="label-left">项目空间 ：</td>
-                            <td> {%  used_space request.tracker.project.use_space %}
+                            <td> {% used_space request.tracker.project.use_space %}
                                 / {{ request.tracker.price_policy.project_space }} GB
                             </td>
                         </tr>
