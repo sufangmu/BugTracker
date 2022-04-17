@@ -26,6 +26,7 @@ urlpatterns = [
     # 项目管理
     re_path(r'manage/(?P<project_id>\d+)/', include([
         path('dashboard/', dashboard.dashboard, name='dashboard'),
+        path('dashboard/issues/chart', dashboard.issues_chart, name='issues_chart'),
         path('statistics/', manage.statistics, name='statistics'),
         path('file/', file.file, name='file'),
         path('file/delete/', file.file_delete, name='file_delete'),
