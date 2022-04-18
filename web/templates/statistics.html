@@ -12,6 +12,31 @@
             </div>
         </div>
     </div>
+
+    <div class="row" style="margin-top: 20px;">
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart" aria-hidden="true"></i> 人员工作进度
+                </div>
+                <div class="panel-body">
+                    <div id="projectUser" style="height: 300px;"></div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-pie-chart" aria-hidden="true"></i> 优先级统计
+                </div>
+                <div class="panel-body">
+                    <div id="priority" style="height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
 {% endblock %}
 {% block js %}
     <script src="{% static 'plugin/daterangepicker/moment.min.js' %}"></script>
