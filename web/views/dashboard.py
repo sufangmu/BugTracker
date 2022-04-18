@@ -39,7 +39,6 @@ def issues_chart(request, project_id):
     date_dict = collections.OrderedDict()
     for i in range(0, 30):
         date = today - datetime.timedelta(days=i)
-        print(date)
         date_dict[date.strftime("%Y-%m-%d")] = [time.mktime(date.timetuple()) * 1000, 0]
 
     result = models.Issues.objects.filter(project_id=project_id,
