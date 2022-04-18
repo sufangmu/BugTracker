@@ -3,12 +3,12 @@
 from django.urls import path, re_path, include
 from web.views import account
 from web.views import project
-from web.views import manage
 from web.views import wiki
 from web.views import file
 from web.views import setting
 from web.views import issues
 from web.views import dashboard
+from web.views import statistics
 
 urlpatterns = [
     path('register/', account.register, name='register'),
@@ -27,7 +27,7 @@ urlpatterns = [
     re_path(r'manage/(?P<project_id>\d+)/', include([
         path('dashboard/', dashboard.dashboard, name='dashboard'),
         path('dashboard/issues/chart', dashboard.issues_chart, name='issues_chart'),
-        path('statistics/', manage.statistics, name='statistics'),
+        path('statistics/', statistics.statistics, name='statistics'),
         path('file/', file.file, name='file'),
         path('file/delete/', file.file_delete, name='file_delete'),
         path('file/post/', file.file_post, name='file_post'),
