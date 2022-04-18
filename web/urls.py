@@ -29,6 +29,7 @@ urlpatterns = [
         path('dashboard/issues/chart', dashboard.issues_chart, name='issues_chart'),
         path('statistics/', statistics.statistics, name='statistics'),
         path('statistics/priority', statistics.priority, name='statistics_priority'),
+        path('statistics/project_user', statistics.project_user, name='statistics_project_user'),
         path('file/', file.file, name='file'),
         path('file/delete/', file.file_delete, name='file_delete'),
         path('file/post/', file.file_post, name='file_post'),

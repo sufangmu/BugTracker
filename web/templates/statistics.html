@@ -44,10 +44,12 @@
     <script src="{% static 'plugin/highcharts/highcharts.js' %}"></script>
     <script>
         let PRIORITY_API = "{% url 'statistics_priority' project_id=request.tracker.project.id %}";
+        let PROJECT_USER_API = "{% url 'statistics_project_user' project_id=request.tracker.project.id %}";
 
         $(function () {
             initDateRangePicker();
             priority(moment().format('YYYY-MM-DD'), moment().add(1, 'days').format('YYYY-MM-DD'));
+            projectUser(moment().format('YYYY-MM-DD'), moment().add(1, 'days').format('YYYY-MM-DD'));
         });
 
         function initDateRangePicker() {
@@ -79,6 +81,7 @@
             $('#rangePicker').daterangepicker(options, function (start, end, label) {
                 // 选择了时间之后，函数自动被触发。
                 priority(start.format('YYYY-MM-DD'), end.add(1, 'days').format('YYYY-MM-DD'));
+                projectUser(start.format('YYYY-MM-DD'), end.add(1, 'days').format('YYYY-MM-DD'));
             });
         }
 
@@ -120,6 +123,71 @@
                 success: function (res) {
                     config.series[0].data = res.data;
                     Highcharts.chart('priority', config);
+
+                }
+            })
+        }
+
+        function projectUser(start, end) {
+            let config = {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: null
+                },
+                credits: {
+                    enabled: false // 关闭版权信息
+                },
+                xAxis: {
+                    categories: []
+                },
+
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: '问题数量'
+                    },
+                    stackLabels: {  // 堆叠数据标签
+                        enabled: true,
+                        style: {
+                            fontWeight: 'bold',
+                            color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                        }
+                    }
+                },
+                legend: {
+                    align: 'center',
+                    verticalAlign: 'top'
+
+                },
+                tooltip: {
+                    formatter: function () {
+                        return '<b>' + this.x + '</b><br/>' +
+                            this.series.name + ': ' + this.y + '<br/>' +
+                            '总量: ' + this.point.stackTotal;
+                    }
+                },
+                plotOptions: {
+                    column: {
+                        stacking: 'normal',
+                        dataLabels: {
+                            enabled: false
+                        }
+                    }
+                },
+                series: []
+            };
+            // Highcharts.chart('projectUser', config);
+            $.ajax({
+                url: PROJECT_USER_API,
+                type: "GET",
+                data: {start: start, end: end},
+                dataType: "JSON",
+                success: function (res) {
+                    config.xAxis.categories = res.data.categories;
+                    config.series = res.data.series;
+                    Highcharts.chart('projectUser', config);
 
                 }
             })

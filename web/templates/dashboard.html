@@ -194,6 +194,7 @@
     <script src="{% static 'plugin/highcharts/highcharts.js' %}"></script>
     <script>
         let INIT_CHART = "{% url 'issues_chart' project_id=request.tracker.project.id %}";
+
         Highcharts.setOptions({
             global: {
                 useUTC: false
@@ -260,6 +261,8 @@
                     let chart = Highcharts.chart('chart', config);
                 }
             });
+
         }
+
     </script>
 {% endblock %}
